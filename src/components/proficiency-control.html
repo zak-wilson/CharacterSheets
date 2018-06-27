@@ -1,0 +1,116 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<dom-module id="proficiency-control">
+	<template>
+		<style>
+			paper-listbox {
+				--paper-item-min-height: 0px;
+			}
+		</style>
+
+		<h4>[[type]]</h4>
+		<template is="dom-if" if="[[_raceChoose]]">
+			<label>Choose [[_raceChoose]]:</label>
+			<paper-listbox multi attr-for-selected="name" selected-items="{{_selectedRaceProficiencies}}">
+				<template is="dom-repeat" items="[[_raceProficiencies]]">
+					<paper-item disabled$="[[_enoughItemsSelected(_raceChoose, _selectedRaceProficiencies, item)]]" name="[[item]]">[[item]]</paper-item>
+				</template>
+			</paper-listbox>
+		</template>
+		<template is="dom-if" if="[[_subraceChoose]]">
+			<paper-listbox multi>
+				<template is="dom-repeat" items="[[_subraceProficiencies]]">
+					<paper-item>[[item]]</paper-item>
+				</template>
+			</paper-listbox>
+		</template>
+		<template is="dom-if" if="[[_classChoose]]">
+			<paper-listbox multi>
+				<template is="dom-repeat" items="[[_classProficiencies]]">
+					<paper-item>[[item]]</paper-item>
+				</template>
+			</paper-listbox>
+		</template>
+		<p>[[_getCsv(_staticProficiencies)]]</p>
+
+	</template>
+
+	<script>
+		Polymer.setPassiveTouchGestures(true);
+
+		class ProficiencyControl extends Polymer.Element {
+			static get is() { return 'proficiency-control'; }
+
+			static get properties() {
+				return {
+					race: Object,
+					subrace: Object,
+					selectedClass: Object,
+					type: String,
+					_raceChoose: {
+						type: Number,
+						computed: '_getRequiresChoose(race, type)'
+					},
+					_raceProficiencies: {
+						type: Array,
+						computed: '_getProficiencies(race, type, _raceChoose)'
+					},
+					_selectedRaceProficiencies: {
+						type: Array,
+						value: []
+					},
+					_subraceChoose: {
+						type: Number,
+						computed: '_getRequiresChoose(subrace, type)'
+					},
+					_subraceProficiencies: {
+						type: Array,
+						computed: '_getProficiencies(subrace, type, _subraceChoose)'
+					},
+					_classChoose: {
+						type: Number,
+						computed: '_getRequiresChoose(selectedClass, type)'
+					},
+					_classProficiencies: {
+						type: Array,
+						computed: '_getProficiencies(selectedClass, type, _classChoose)'
+					},
+					_staticProficiencies: {
+						type: Array,
+						computed: '_getStaticProficiencies(_raceChoose, _subraceChoose, _classChoose, _raceProficiencies, _subraceProficiencies, _classProficiencies)'
+					}
+				};
+			}
+
+			_getProficiencies(obj, type, choose) {
+				if (choose) {
+					return obj[type + 'Proficiencies'].Options;
+				}
+				return (obj || {})[type + 'Proficiencies'] || [];
+			}
+			_getRequiresChoose(obj, type) {
+				if (!obj || !type) return false;
+				return obj && type && obj[type + 'Proficiencies'] && !Array.isArray(obj[type + 'Proficiencies']) && obj[type + 'Proficiencies'].Choose;
+			}
+			_getStaticProficiencies(raceChoose, subraceChoose, classChoose, raceProficiencies, subraceProficiencies, classProficiencies) {
+				var profs = [];
+				if (!raceChoose) profs = profs.concat(raceProficiencies);
+				if (!subraceChoose) profs = profs.concat(subraceProficiencies);
+				if (!classChoose) profs = profs.concat(classProficiencies);
+				return [...new Set(profs)];
+			}
+
+			_enoughItemsSelected(maxItems, selectedItems, item) {
+				return selectedItems.length >= maxItems && !selectedItems.filter(function (i) { return i.name === item; }).length;
+			}
+			_getCsv(values) {
+				return values.join(', ');
+			}
+		}
+
+		window.customElements.define(ProficiencyControl.is, ProficiencyControl);
+	</script>
+</dom-module>

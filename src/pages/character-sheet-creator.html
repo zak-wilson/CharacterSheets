@@ -4,8 +4,9 @@
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
-<link rel="import" href="../components/stat-control.html">
 <link rel="import" href="../components/card-wrapper.html">
+<link rel="import" href="../components/proficiency-control.html">
+<link rel="import" href="../components/stat-control.html">
 
 <dom-module id="character-sheet-creator">
 	<template>
@@ -48,7 +49,7 @@
 		<card-wrapper title="Basic Info" opened>
 			<div class="flexInline">
 				<paper-input required label="Name"></paper-input>
-				<paper-dropdown-menu label="Class" value="{{_selectedClass}}">
+				<paper-dropdown-menu label="Class" value="{{_selectedClassValue}}">
 					<paper-listbox slot="dropdown-content">
 						<template is="dom-repeat" items="{{_classes}}">
 							<paper-item>[[item]]</paper-item>
@@ -84,16 +85,19 @@
 			</div>
 		</card-wrapper>
 		<card-wrapper title="Proficencies">
-			
+			<proficiency-control type="Weapon" race="[[_selectedRace]]" subrace="[[_selectedSubrace]]" selected-class="[[_selectedClass]]"></proficiency-control>
+			<proficiency-control type="Armour" race="[[_selectedRace]]" subrace="[[_selectedSubrace]]" selected-class="[[_selectedClass]]"></proficiency-control>
+			<proficiency-control type="Tool" race="[[_selectedRace]]" subrace="[[_selectedSubrace]]" selected-class="[[_selectedClass]]"></proficiency-control>
+			<proficiency-control type="Language" race="[[_selectedRace]]" subrace="[[_selectedSubrace]]" selected-class="[[_selectedClass]]"></proficiency-control>
 		</card-wrapper>
 		<card-wrapper title="Spells">
-			
+
 		</card-wrapper>
 		<card-wrapper title="Items">
-			
+
 		</card-wrapper>
 		<card-wrapper title="Equipment">
-			
+
 		</card-wrapper>
 	</template>
 
@@ -126,7 +130,7 @@
 					_selectedClassValue: {
 						type: String,
 						observer: '_selectedClassChanged'
-					},
+					}
 				};
 			}
 
@@ -137,16 +141,21 @@
 			}
 
 			_selectedRaceChanged(race) {
+				if (!race) return;
+
 				this._subraces = this._races[race].Subraces || null;
+				this._selectedSubraceValue = null;
 				this._fileLoader('src/data/races/' + race + '.json', function (data) { this._selectedRace = data });
 			}
 			_selectedSubraceChanged(subrace) {
+				if (!subrace) return;
+
 				this._fileLoader('src/data/races/' + this._selectedRaceValue + '/' + subrace + '.json', function (data) { this._selectedSubrace = data });
 			}
 			_selectedClassChanged(selectedClass) {
 				this._fileLoader('src/data/classes/' + selectedClass + '.json', function (data) { this._selectedClass = data });
 			}
-			
+
 			_getObjectKeys(obj) {
 				return Object.keys(obj || {});
 			}
