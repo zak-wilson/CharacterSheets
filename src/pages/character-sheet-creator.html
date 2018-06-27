@@ -1,0 +1,98 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../components/stat-control.html">
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="character-sheet-creator">
+	<template>
+		<style include="shared-styles">
+			:host {
+				display: block;
+			}
+
+			.strength {
+				--main-stat-colour: red;
+			}
+
+			.dexterity {
+				--main-stat-colour: green;
+			}
+
+			.constitution {
+				--main-stat-colour: orange;
+			}
+
+			.intelligence {
+				--main-stat-colour: blue;
+			}
+
+			.wisdom {
+				--main-stat-colour: yellow;
+			}
+
+			.charisma {
+				--main-stat-colour: purple;
+			}
+
+			.flexInline {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-between;
+			}
+
+			.flexInline>* {
+				display: flex;
+				flex-grow: 1;
+			}
+		</style>
+
+		<div class="card">
+			<div class="flexInline">
+				<paper-input required label="Name"></paper-input>
+				<paper-dropdown-menu label="Class">
+					<paper-listbox slot="dropdown-content">
+						<paper-item>Barbarian</paper-item>
+						<paper-item>Bard</paper-item>
+					</paper-listbox>
+				</paper-dropdown-menu>
+				<paper-dropdown-menu label="Race">
+					<paper-listbox slot="dropdown-content">
+						<paper-item>Dwarf</paper-item>
+						<paper-item>Elf</paper-item>
+					</paper-listbox>
+				</paper-dropdown-menu>
+			</div>
+			<div class="flexInline">
+				<stat-control class="strength" stat="Strength"></stat-control>
+				<stat-control class="dexterity" stat="Dexterity"></stat-control>
+				<stat-control class="constitution" stat="Constitution"></stat-control>
+				<stat-control class="intelligence" stat="Intelligence"></stat-control>
+				<stat-control class="wisdom" stat="Wisdom"></stat-control>
+				<stat-control class="charisma" stat="Charisma"></stat-control>
+			</div>
+		</div>
+	</template>
+
+	<script>
+		Polymer.setPassiveTouchGestures(true);
+
+		class CharacterSheetCreator extends Polymer.Element {
+			static get is() { return 'character-sheet-creator'; }
+
+			static get properties() {
+				return {
+					title: {
+						type: String,
+						value: "Character Sheet Creator"
+					}
+				};
+			}
+		}
+
+		window.customElements.define(CharacterSheetCreator.is, CharacterSheetCreator);
+	</script>
+</dom-module>
