@@ -1,10 +1,10 @@
 {
-  "name": "polymer-starter-kit",
+  "name": "character-sheets",
   "version": "4.0.0",
-  "description": "A starting point for Polymer apps",
-  "author": "The Polymer Authors",
-  "license": "BSD-3-Clause",
-  "repository": "Polymer/polymer-starter-kit",
+  "description": "Character Sheets",
+  "author": "Zak",
+  "license": "",
+  "repository": "zak-wilson/CharacterSheets",
   "scripts": {
     "start": "polymer serve",
     "build": "polymer build",
