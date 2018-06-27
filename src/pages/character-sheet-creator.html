@@ -5,11 +5,11 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../components/stat-control.html">
-<link rel="import" href="../shared-styles.html">
+<link rel="import" href="../components/card-wrapper.html">
 
 <dom-module id="character-sheet-creator">
 	<template>
-		<style include="shared-styles">
+		<style>
 			:host {
 				display: block;
 			}
@@ -45,8 +45,7 @@
 			}
 		</style>
 
-		<div class="card">
-			<h1>Basic Info</h1>
+		<card-wrapper title="Basic Info" opened>
 			<div class="flexInline">
 				<paper-input required label="Name"></paper-input>
 				<paper-dropdown-menu label="Class" value="{{_selectedClass}}">
@@ -73,9 +72,8 @@
 					</paper-dropdown-menu>
 				</template>
 			</div>
-		</div>
-		<div class="card">
-			<h1>Stats</h1>
+		</card-wrapper>
+		<card-wrapper title="Stats">
 			<div class="flexInline">
 				<stat-control class="strength" stat="Strength"></stat-control>
 				<stat-control class="dexterity" stat="Dexterity"></stat-control>
@@ -84,7 +82,19 @@
 				<stat-control class="wisdom" stat="Wisdom"></stat-control>
 				<stat-control class="charisma" stat="Charisma"></stat-control>
 			</div>
-		</div>
+		</card-wrapper>
+		<card-wrapper title="Proficencies">
+			
+		</card-wrapper>
+		<card-wrapper title="Spells">
+			
+		</card-wrapper>
+		<card-wrapper title="Items">
+			
+		</card-wrapper>
+		<card-wrapper title="Equipment">
+			
+		</card-wrapper>
 	</template>
 
 	<script>
