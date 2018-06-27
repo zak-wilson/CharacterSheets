@@ -41,31 +41,41 @@
 			.flexInline {
 				display: flex;
 				flex-wrap: wrap;
-				justify-content: space-between;
-			}
-
-			.flexInline>* {
-				display: flex;
-				flex-grow: 1;
+				justify-content: space-around;
 			}
 		</style>
 
 		<div class="card">
+			<h1>Basic Info</h1>
 			<div class="flexInline">
 				<paper-input required label="Name"></paper-input>
-				<paper-dropdown-menu label="Class">
+				<paper-dropdown-menu label="Class" value="{{_selectedClass}}">
 					<paper-listbox slot="dropdown-content">
-						<paper-item>Barbarian</paper-item>
-						<paper-item>Bard</paper-item>
+						<template is="dom-repeat" items="{{_classes}}">
+							<paper-item>[[item]]</paper-item>
+						</template>
 					</paper-listbox>
 				</paper-dropdown-menu>
-				<paper-dropdown-menu label="Race">
+				<paper-dropdown-menu label="Race" value="{{_selectedRaceValue}}">
 					<paper-listbox slot="dropdown-content">
-						<paper-item>Dwarf</paper-item>
-						<paper-item>Elf</paper-item>
+						<template is="dom-repeat" items="{{_getObjectKeys(_races)}}">
+							<paper-item>[[item]]</paper-item>
+						</template>
 					</paper-listbox>
 				</paper-dropdown-menu>
+				<template is="dom-if" if="[[_subraces]]" restamp>
+					<paper-dropdown-menu label="Subrace" value="{{_selectedSubraceValue}}">
+						<paper-listbox slot="dropdown-content">
+							<template is="dom-repeat" items="{{_subraces}}">
+								<paper-item>[[item]]</paper-item>
+							</template>
+						</paper-listbox>
+					</paper-dropdown-menu>
+				</template>
 			</div>
+		</div>
+		<div class="card">
+			<h1>Stats</h1>
 			<div class="flexInline">
 				<stat-control class="strength" stat="Strength"></stat-control>
 				<stat-control class="dexterity" stat="Dexterity"></stat-control>
@@ -88,8 +98,50 @@
 					title: {
 						type: String,
 						value: "Character Sheet Creator"
-					}
+					},
+					_races: Object,
+					_subraces: Array,
+					_selectedRace: Object,
+					_selectedRaceValue: {
+						type: String,
+						observer: '_selectedRaceChanged'
+					},
+					_selectedSubrace: Object,
+					_selectedSubraceValue: {
+						type: String,
+						observer: '_selectedSubraceChanged'
+					},
+					_classes: Array,
+					_selectedClass: Object,
+					_selectedClassValue: {
+						type: String,
+						observer: '_selectedClassChanged'
+					},
 				};
+			}
+
+			constructor() {
+				super();
+				this._fileLoader('src/data/races.json', function (data) { this._races = data; });
+				this._fileLoader('src/data/classes.json', function (data) { this._classes = data; });
+			}
+
+			_selectedRaceChanged(race) {
+				this._subraces = this._races[race].Subraces || null;
+				this._fileLoader('src/data/races/' + race + '.json', function (data) { this._selectedRace = data });
+			}
+			_selectedSubraceChanged(subrace) {
+				this._fileLoader('src/data/races/' + this._selectedRaceValue + '/' + subrace + '.json', function (data) { this._selectedSubrace = data });
+			}
+			_selectedClassChanged(selectedClass) {
+				this._fileLoader('src/data/classes/' + selectedClass + '.json', function (data) { this._selectedClass = data });
+			}
+			
+			_getObjectKeys(obj) {
+				return Object.keys(obj || {});
+			}
+			_fileLoader(file, propToSet) {
+				fetch(file).then(function (data) { return data.json() }.bind(this)).then(propToSet.bind(this));
 			}
 		}
 
