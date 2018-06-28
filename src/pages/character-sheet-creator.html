@@ -76,12 +76,12 @@
 		</card-wrapper>
 		<card-wrapper title="Stats">
 			<div class="flexInline">
-				<stat-control class="strength" stat="Strength"></stat-control>
-				<stat-control class="dexterity" stat="Dexterity"></stat-control>
-				<stat-control class="constitution" stat="Constitution"></stat-control>
-				<stat-control class="intelligence" stat="Intelligence"></stat-control>
-				<stat-control class="wisdom" stat="Wisdom"></stat-control>
-				<stat-control class="charisma" stat="Charisma"></stat-control>
+				<stat-control class="strength" stat="Strength" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Strength, _selectedSubrace.AbilityScoreBonus.Strength, _selectedClass.AbilityScoreBonus.Strength)]]"></stat-control>
+				<stat-control class="dexterity" stat="Dexterity" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Dexterity, _selectedSubrace.AbilityScoreBonus.Dexterity, _selectedClass.AbilityScoreBonus.Dexterity)]]"></stat-control>
+				<stat-control class="constitution" stat="Constitution" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Constitution, _selectedSubrace.AbilityScoreBonus.Constitution, _selectedClass.AbilityScoreBonus.Constitution)]]"></stat-control>
+				<stat-control class="intelligence" stat="Intelligence" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Intelligence, _selectedSubrace.AbilityScoreBonus.Intelligence, _selectedClass.AbilityScoreBonus.Intelligence)]]"></stat-control>
+				<stat-control class="wisdom" stat="Wisdom" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Wisdom, _selectedSubrace.AbilityScoreBonus.Wisdom, _selectedClass.AbilityScoreBonus.Wisdom)]]"></stat-control>
+				<stat-control class="charisma" stat="Charisma" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Charisma, _selectedSubrace.AbilityScoreBonus.Charisma, _selectedClass.AbilityScoreBonus.Charisma)]]"></stat-control>
 			</div>
 		</card-wrapper>
 		<card-wrapper title="Proficiencies">
@@ -165,6 +165,10 @@
 				}
 
 				this._fileLoader('src/data/classes/' + selectedClass + '.json', (data) => this._selectedClass = data);
+			}
+
+			_getStatBonus(race, subrace, selectedClass, type) {
+				return race || 0 + subrace || 0 + selectedClass || 0;
 			}
 
 			_getObjectKeys(obj) {

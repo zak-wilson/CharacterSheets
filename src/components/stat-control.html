@@ -61,7 +61,11 @@
 		</style>
 
 		<div class="circle">
-			<paper-input class="mainStat" disabled$="[[readonly]]" required value="{{value}}"></paper-input>
+			<paper-input class="mainStat" disabled$="[[readonly]]" required value="{{value}}">
+				<template is="dom-if" if="[[bonus]]" restamp>
+					<div slot="suffix">+[[bonus]]</div>
+				</template>
+			</paper-input>
 		</div>
 		<div class="flexColumn">
 			<h2>[[stat]]</h2>
@@ -85,6 +89,7 @@
 						type: Number,
 						value: 0
 					},
+					bonus: Number,
 					readonly: {
 						type: Boolean,
 						value: false,
