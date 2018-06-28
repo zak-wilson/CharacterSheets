@@ -9,32 +9,46 @@
 			paper-listbox {
 				--paper-item-min-height: 0px;
 			}
+
+			.flexInline {
+				display: flex;
+			}
 		</style>
 
 		<h4>[[type]]</h4>
-		<template is="dom-if" if="[[_raceChoose]]">
-			<label>Choose [[_raceChoose]]:</label>
-			<paper-listbox multi attr-for-selected="name" selected-items="{{_selectedRaceProficiencies}}">
-				<template is="dom-repeat" items="[[_raceProficiencies]]">
-					<paper-item disabled$="[[_enoughItemsSelected(_raceChoose, _selectedRaceProficiencies, item)]]" name="[[item]]">[[item]]</paper-item>
-				</template>
-			</paper-listbox>
-		</template>
-		<template is="dom-if" if="[[_subraceChoose]]">
-			<paper-listbox multi>
-				<template is="dom-repeat" items="[[_subraceProficiencies]]">
-					<paper-item>[[item]]</paper-item>
-				</template>
-			</paper-listbox>
-		</template>
-		<template is="dom-if" if="[[_classChoose]]">
-			<paper-listbox multi>
-				<template is="dom-repeat" items="[[_classProficiencies]]">
-					<paper-item>[[item]]</paper-item>
-				</template>
-			</paper-listbox>
-		</template>
 		<p>[[_getCsv(_staticProficiencies)]]</p>
+		<div class="flexInline">
+			<template is="dom-if" if="[[_classChoose]]">
+				<div>
+					<label>Choose [[_classChoose]]:</label>
+					<paper-listbox multi attr-for-selected="name" selected-items="{{_selectedClassProficiencies}}">
+						<template is="dom-repeat" items="[[_classProficiencies]]">
+							<paper-item disabled$="[[_enoughItemsSelected(_classChoose, _selectedClassProficiencies, item)]]" name="[[item]]">[[item]]</paper-item>
+						</template>
+					</paper-listbox>
+				</div>
+			</template>
+			<template is="dom-if" if="[[_raceChoose]]">
+				<div>
+					<label>Choose [[_raceChoose]]:</label>
+					<paper-listbox multi attr-for-selected="name" selected-items="{{_selectedRaceProficiencies}}">
+						<template is="dom-repeat" items="[[_raceProficiencies]]">
+							<paper-item disabled$="[[_enoughItemsSelected(_raceChoose, _selectedRaceProficiencies, item)]]" name="[[item]]">[[item]]</paper-item>
+						</template>
+					</paper-listbox>
+				</div>
+			</template>
+			<template is="dom-if" if="[[_subraceChoose]]">
+				<div>
+					<label>Choose [[_subraceChoose]]:</label>
+					<paper-listbox multi attr-for-selected="name" selected-items="{{_selectedSubraceProficiencies}}">
+						<template is="dom-repeat" items="[[_subraceProficiencies]]">
+							<paper-item disabled$="[[_enoughItemsSelected(_subraceChoose, _selectedSubraceProficiencies, item)]]" name="[[item]]">[[item]]</paper-item>
+						</template>
+					</paper-listbox>
+				</div>
+			</template>
+		</div>
 
 	</template>
 
@@ -50,6 +64,18 @@
 					subrace: Object,
 					selectedClass: Object,
 					type: String,
+					_classChoose: {
+						type: Number,
+						computed: '_getRequiresChoose(selectedClass, type)'
+					},
+					_classProficiencies: {
+						type: Array,
+						computed: '_getProficiencies(selectedClass, type, _classChoose)'
+					},
+					_selectedClassProficiencies: {
+						type: Array,
+						value: []
+					},
 					_raceChoose: {
 						type: Number,
 						computed: '_getRequiresChoose(race, type)'
@@ -70,17 +96,13 @@
 						type: Array,
 						computed: '_getProficiencies(subrace, type, _subraceChoose)'
 					},
-					_classChoose: {
-						type: Number,
-						computed: '_getRequiresChoose(selectedClass, type)'
-					},
-					_classProficiencies: {
+					_selectedSubraceProficiencies: {
 						type: Array,
-						computed: '_getProficiencies(selectedClass, type, _classChoose)'
+						value: []
 					},
 					_staticProficiencies: {
 						type: Array,
-						computed: '_getStaticProficiencies(_raceChoose, _subraceChoose, _classChoose, _raceProficiencies, _subraceProficiencies, _classProficiencies)'
+						computed: '_getStaticProficiencies(_raceChoose, _subraceChoose, _classChoose, _raceProficiencies, _subraceProficiencies, _classProficiencies, _selectedRaceProficiencies, _selectedSubraceProficiencies, _selectedClassProficiencies)'
 					}
 				};
 			}
@@ -95,16 +117,16 @@
 				if (!obj || !type) return false;
 				return obj && type && obj[type + 'Proficiencies'] && !Array.isArray(obj[type + 'Proficiencies']) && obj[type + 'Proficiencies'].Choose;
 			}
-			_getStaticProficiencies(raceChoose, subraceChoose, classChoose, raceProficiencies, subraceProficiencies, classProficiencies) {
+			_getStaticProficiencies(raceChoose, subraceChoose, classChoose, raceProficiencies, subraceProficiencies, classProficiencies, selectedRaceProficiencies, selectedSubraceProficiencies, selectedClassProficiencies) {
 				var profs = [];
-				if (!raceChoose) profs = profs.concat(raceProficiencies);
-				if (!subraceChoose) profs = profs.concat(subraceProficiencies);
-				if (!classChoose) profs = profs.concat(classProficiencies);
+				profs = profs.concat((classChoose && selectedClassProficiencies.map((a) => a.name)) || classProficiencies);
+				profs = profs.concat((raceChoose && selectedRaceProficiencies.map((a) => a.name)) || raceProficiencies);
+				profs = profs.concat((subraceChoose && selectedSubraceProficiencies.map((a) => a.name)) || subraceProficiencies);
 				return [...new Set(profs)];
 			}
 
 			_enoughItemsSelected(maxItems, selectedItems, item) {
-				return selectedItems.length >= maxItems && !selectedItems.filter(function (i) { return i.name === item; }).length;
+				return selectedItems.length >= maxItems && !selectedItems.filter((i) => i.name === item).length;
 			}
 			_getCsv(values) {
 				return values.join(', ');

@@ -136,11 +136,14 @@
 				}
 				Polymer.importHref(
 					resolvedPageUrl,
-					function () { this.mainTitle = this.$[page].title }.bind(this),
+					this._setPageTitle.bind(this, page),
 					this._defaultPage.bind(this),
 					true);
 			}
 
+			_setPageTitle(page) {
+				this.mainTitle = this.$[page].title;
+			}
 			_defaultPage() {
 				this.set('routeData.page', 'characterSheetCreator');
 			}

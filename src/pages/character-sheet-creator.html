@@ -136,8 +136,8 @@
 
 			constructor() {
 				super();
-				this._fileLoader('src/data/races.json', function (data) { this._races = data; });
-				this._fileLoader('src/data/classes.json', function (data) { this._classes = data; });
+				this._fileLoader('src/data/races.json', (data) => this._races = data);
+				this._fileLoader('src/data/classes.json', (data) => this._classes = data);
 			}
 
 			_selectedRaceChanged(race) {
@@ -145,22 +145,22 @@
 
 				this._subraces = this._races[race].Subraces || null;
 				this._selectedSubraceValue = null;
-				this._fileLoader('src/data/races/' + race + '.json', function (data) { this._selectedRace = data });
+				this._fileLoader('src/data/races/' + race + '.json', (data) => this._selectedRace = data);
 			}
 			_selectedSubraceChanged(subrace) {
 				if (!subrace) return;
 
-				this._fileLoader('src/data/races/' + this._selectedRaceValue + '/' + subrace + '.json', function (data) { this._selectedSubrace = data });
+				this._fileLoader('src/data/races/' + this._selectedRaceValue + '/' + subrace + '.json', (data) => this._selectedSubrace = data);
 			}
 			_selectedClassChanged(selectedClass) {
-				this._fileLoader('src/data/classes/' + selectedClass + '.json', function (data) { this._selectedClass = data });
+				this._fileLoader('src/data/classes/' + selectedClass + '.json', (data) => this._selectedClass = data);
 			}
 
 			_getObjectKeys(obj) {
 				return Object.keys(obj || {});
 			}
 			_fileLoader(file, propToSet) {
-				fetch(file).then(function (data) { return data.json() }.bind(this)).then(propToSet.bind(this));
+				fetch(file).then((data) => data.json()).then(propToSet.bind(this));
 			}
 		}
 
