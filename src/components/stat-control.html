@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 
 <dom-module id="stat-control">
 	<template>
@@ -36,9 +38,25 @@
 			}
 
 			.secondaryStat {
-				width: 20%;
+				width: 10%;
+				margin-top: -12px;
+				margin-left: 5px;
+				text-align: center;
 				--paper-input-container-disabled: {
 					opacity: 1;
+				}
+				--paper-font-caption: {
+					line-height: 0;
+				}
+				--paper-input-container-shared-input-style: {
+					width: 100%;
+					font-size: 12px;
+				}
+				--paper-input-container-input: {
+					margin-bottom: -5px;
+				}
+				--paper-input-container-underline-disabled: {
+					border-bottom-style: solid;
 				}
 			}
 
@@ -69,10 +87,22 @@
 		</div>
 		<div class="flexColumn">
 			<h2>[[stat]]</h2>
-			<div class="flex">
-				<label>Saving Throw</label>
-				<paper-input class="secondaryStat" disabled$="[[readonly]]" value="{{value2}}"></paper-input>
-			</div>
+			<template is="dom-if" if="[[savingThrow]]" restamp>
+				<div class="flex">
+					<label>Saving Throw</label>
+					<paper-input class="secondaryStat" disabled value="[[bonus]]"></paper-input>
+				</div>
+			</template>
+			<iron-selector attr-for-selected="name" selected-attribute="checked" multi selected-values="{{selectedSkills}}">
+				<template is="dom-repeat" items="[[skills]]">
+					<paper-checkbox name="[[item]]">
+						<div class="flex">
+							<label>[[item]]</label>
+							<paper-input class="secondaryStat" disabled value="[[_isSelected(item, selectedSkills, bonus)]]"></paper-input>
+						</div>
+					</paper-checkbox>
+				</template>
+			</iron-selector>
 		</div>
 	</template>
 
@@ -90,12 +120,23 @@
 						value: 0
 					},
 					bonus: Number,
+					savingThrow: {
+						type: Boolean,
+						value: false,
+						reflectToAttribute: true
+					},
+					skills: Array,
+					selectedSkills: Array,
 					readonly: {
 						type: Boolean,
 						value: false,
 						reflectToAttribute: true
 					}
 				};
+			}
+
+			_isSelected(skill, selectedSkills, bonus) {
+				return selectedSkills.includes(skill) && bonus || null;
 			}
 		}
 

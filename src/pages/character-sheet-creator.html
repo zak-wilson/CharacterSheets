@@ -76,12 +76,12 @@
 		</card-wrapper>
 		<card-wrapper title="Stats">
 			<div class="flexInline">
-				<stat-control class="strength" stat="Strength" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Strength, _selectedSubrace.AbilityScoreBonus.Strength, _selectedClass.AbilityScoreBonus.Strength)]]"></stat-control>
-				<stat-control class="dexterity" stat="Dexterity" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Dexterity, _selectedSubrace.AbilityScoreBonus.Dexterity, _selectedClass.AbilityScoreBonus.Dexterity)]]"></stat-control>
-				<stat-control class="constitution" stat="Constitution" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Constitution, _selectedSubrace.AbilityScoreBonus.Constitution, _selectedClass.AbilityScoreBonus.Constitution)]]"></stat-control>
-				<stat-control class="intelligence" stat="Intelligence" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Intelligence, _selectedSubrace.AbilityScoreBonus.Intelligence, _selectedClass.AbilityScoreBonus.Intelligence)]]"></stat-control>
-				<stat-control class="wisdom" stat="Wisdom" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Wisdom, _selectedSubrace.AbilityScoreBonus.Wisdom, _selectedClass.AbilityScoreBonus.Wisdom)]]"></stat-control>
-				<stat-control class="charisma" stat="Charisma" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Charisma, _selectedSubrace.AbilityScoreBonus.Charisma, _selectedClass.AbilityScoreBonus.Charisma)]]"></stat-control>
+				<stat-control class="strength" stat="Strength" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Strength')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Strength, _selectedSubrace.AbilityScoreBonus.Strength, _selectedClass.AbilityScoreBonus.Strength)]]"></stat-control>
+				<stat-control class="dexterity" stat="Dexterity" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Dexterity')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Dexterity, _selectedSubrace.AbilityScoreBonus.Dexterity, _selectedClass.AbilityScoreBonus.Dexterity)]]"></stat-control>
+				<stat-control class="constitution" stat="Constitution" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Constitution')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Constitution, _selectedSubrace.AbilityScoreBonus.Constitution, _selectedClass.AbilityScoreBonus.Constitution)]]"></stat-control>
+				<stat-control class="intelligence" stat="Intelligence" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Intelligence')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Intelligence, _selectedSubrace.AbilityScoreBonus.Intelligence, _selectedClass.AbilityScoreBonus.Intelligence)]]"></stat-control>
+				<stat-control class="wisdom" stat="Wisdom" skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Wisdom')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Wisdom, _selectedSubrace.AbilityScoreBonus.Wisdom, _selectedClass.AbilityScoreBonus.Wisdom)]]"></stat-control>
+				<stat-control class="charisma" stat="Charisma" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Charisma')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Charisma, _selectedSubrace.AbilityScoreBonus.Charisma, _selectedClass.AbilityScoreBonus.Charisma)]]"></stat-control>
 			</div>
 		</card-wrapper>
 		<card-wrapper title="Proficiencies">
@@ -130,6 +130,53 @@
 					_selectedClassValue: {
 						type: String,
 						observer: '_selectedClassChanged'
+					},
+					_strengthSkills: {
+						type: Array,
+						value: [
+							"Athletics"
+						]
+					},
+					_dexteritySkills: {
+						type: Array,
+						value: [
+							"Acrobatics",
+							"Sleight of Hand",
+							"Stealth"
+						]
+					},
+					_constitutionSkills: {
+						type: Array,
+						value: []
+					},
+					_intelligenceSkills: {
+						type: Array,
+						value: [
+							"Arcana",
+							"History",
+							"Investigation",
+							"Nature",
+							"Religion"
+						]
+					},
+					_wisdomSkills: {
+						type: Array,
+						value: [
+							"Animal Handling",
+							"Insight",
+							"Medicine",
+							"Perception",
+							"Survival"
+						]
+					},
+					_charismaSkills: {
+						type: Array,
+						value: [
+							"Deception",
+							"Intimidation",
+							"Performance",
+							"Persuasion"
+						]
 					}
 				};
 			}
@@ -167,10 +214,13 @@
 				this._fileLoader('src/data/classes/' + selectedClass + '.json', (data) => this._selectedClass = data);
 			}
 
-			_getStatBonus(race, subrace, selectedClass, type) {
+			_getStatBonus(race, subrace, selectedClass) {
 				return race || 0 + subrace || 0 + selectedClass || 0;
 			}
 
+			_collectionContains(collection, value) {
+				return (collection || []).includes(value);
+			}
 			_getObjectKeys(obj) {
 				return Object.keys(obj || {});
 			}
