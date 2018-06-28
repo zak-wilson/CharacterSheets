@@ -18,7 +18,9 @@
     "paper-dropdown-menu": "@polymer/paper-dropdown-menu#^2.1.0",
     "paper-listbox": "@polymer/paper-listbox#^2.1.1",
     "paper-item": "@polymer/paper-item#^2.1.1",
-    "iron-collapse": "@polymer/iron-collapse#^2.2.1"
+    "iron-collapse": "@polymer/iron-collapse#^2.2.1",
+    "neon-animation": "@polymer/neon-animation#^2.2.1",
+    "web-animations-js": "^2.3.1"
   },
   "resolutions": {
     "polymer": "^2.0.0"
