@@ -60,17 +60,26 @@
 
 			static get properties() {
 				return {
-					race: Object,
-					subrace: Object,
-					selectedClass: Object,
+					race: {
+						type: Object,
+						value: null
+					},
+					subrace: {
+						type: Object,
+						value: null
+					},
+					selectedClass: {
+						type: Object,
+						value: null
+					},
 					type: String,
 					_classChoose: {
 						type: Number,
-						computed: '_getRequiresChoose(selectedClass, type)'
+						computed: '_getRequiresChoose(selectedClass)'
 					},
 					_classProficiencies: {
 						type: Array,
-						computed: '_getProficiencies(selectedClass, type, _classChoose)'
+						computed: '_getProficiencies(selectedClass, _classChoose)'
 					},
 					_selectedClassProficiencies: {
 						type: Array,
@@ -78,11 +87,11 @@
 					},
 					_raceChoose: {
 						type: Number,
-						computed: '_getRequiresChoose(race, type)'
+						computed: '_getRequiresChoose(race)'
 					},
 					_raceProficiencies: {
 						type: Array,
-						computed: '_getProficiencies(race, type, _raceChoose)'
+						computed: '_getProficiencies(race, _raceChoose)'
 					},
 					_selectedRaceProficiencies: {
 						type: Array,
@@ -90,11 +99,11 @@
 					},
 					_subraceChoose: {
 						type: Number,
-						computed: '_getRequiresChoose(subrace, type)'
+						computed: '_getRequiresChoose(subrace)'
 					},
 					_subraceProficiencies: {
 						type: Array,
-						computed: '_getProficiencies(subrace, type, _subraceChoose)'
+						computed: '_getProficiencies(subrace, _subraceChoose)'
 					},
 					_selectedSubraceProficiencies: {
 						type: Array,
@@ -107,15 +116,12 @@
 				};
 			}
 
-			_getProficiencies(obj, type, choose) {
-				if (choose) {
-					return obj[type + 'Proficiencies'].Options;
-				}
-				return (obj || {})[type + 'Proficiencies'] || [];
+			_getProficiencies(obj, choose) {
+				return (choose && obj.Options) || obj || [];
 			}
-			_getRequiresChoose(obj, type) {
-				if (!obj || !type) return false;
-				return obj && type && obj[type + 'Proficiencies'] && !Array.isArray(obj[type + 'Proficiencies']) && obj[type + 'Proficiencies'].Choose;
+			_getRequiresChoose(obj) {
+				if (!obj) return 0;
+				return (obj && !Array.isArray(obj) && obj.Choose) || 0;
 			}
 			_getStaticProficiencies(raceChoose, subraceChoose, classChoose, raceProficiencies, subraceProficiencies, classProficiencies, selectedRaceProficiencies, selectedSubraceProficiencies, selectedClassProficiencies) {
 				var profs = [];

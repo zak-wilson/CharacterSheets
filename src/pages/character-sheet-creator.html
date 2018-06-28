@@ -84,11 +84,11 @@
 				<stat-control class="charisma" stat="Charisma"></stat-control>
 			</div>
 		</card-wrapper>
-		<card-wrapper title="Proficencies">
-			<proficiency-control type="Weapon" race="[[_selectedRace]]" subrace="[[_selectedSubrace]]" selected-class="[[_selectedClass]]"></proficiency-control>
-			<proficiency-control type="Armour" race="[[_selectedRace]]" subrace="[[_selectedSubrace]]" selected-class="[[_selectedClass]]"></proficiency-control>
-			<proficiency-control type="Tool" race="[[_selectedRace]]" subrace="[[_selectedSubrace]]" selected-class="[[_selectedClass]]"></proficiency-control>
-			<proficiency-control type="Language" race="[[_selectedRace]]" subrace="[[_selectedSubrace]]" selected-class="[[_selectedClass]]"></proficiency-control>
+		<card-wrapper title="Proficiencies">
+			<proficiency-control type="Weapon" race="[[_selectedRace.Proficiencies.Weapon]]" subrace="[[_selectedSubrace.Proficiencies.Weapon]]" selected-class="[[_selectedClass.Proficiencies.Weapon]]"></proficiency-control>
+			<proficiency-control type="Armour" race="[[_selectedRace.Proficiencies.Armour]]" subrace="[[_selectedSubrace.Proficiencies.Armour]]" selected-class="[[_selectedClass.Proficiencies.Armour]]"></proficiency-control>
+			<proficiency-control type="Tool" race="[[_selectedRace.Proficiencies.Tool]]" subrace="[[_selectedSubrace.Proficiencies.Tool]]" selected-class="[[_selectedClass.Proficiencies.Tool]]"></proficiency-control>
+			<proficiency-control type="Language" race="[[_selectedRace.Proficiencies.Language]]" subrace="[[_selectedSubrace.Proficiencies.Language]]" selected-class="[[_selectedClass.Proficiencies.Language]]"></proficiency-control>
 		</card-wrapper>
 		<card-wrapper title="Spells">
 
@@ -141,18 +141,29 @@
 			}
 
 			_selectedRaceChanged(race) {
-				if (!race) return;
+				this._selectedSubraceValue = null;
+				if (!race) {
+					this._selectedRace = null;
+					return;
+				}
 
 				this._subraces = this._races[race].Subraces || null;
-				this._selectedSubraceValue = null;
 				this._fileLoader('src/data/races/' + race + '.json', (data) => this._selectedRace = data);
 			}
 			_selectedSubraceChanged(subrace) {
-				if (!subrace) return;
+				if (!subrace) {
+					this._selectedSubrace = null;
+					return;
+				}
 
 				this._fileLoader('src/data/races/' + this._selectedRaceValue + '/' + subrace + '.json', (data) => this._selectedSubrace = data);
 			}
 			_selectedClassChanged(selectedClass) {
+				if (!selectedClass) {
+					this._selectedClass = null;
+					return;
+				}
+
 				this._fileLoader('src/data/classes/' + selectedClass + '.json', (data) => this._selectedClass = data);
 			}
 
