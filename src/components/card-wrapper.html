@@ -23,12 +23,32 @@
 			h4 {
 				margin: 5px 0 16px 0;
 			}
+
+			.heading {
+				display: inline-flex;
+			}
+
+			.left {
+				display: flex;
+				flex: 50%;
+			}
+
+			.right {
+				display: flex;
+				justify-content: space-between;
+				flex-direction: column;
+			}
 		</style>
 
 		<div class="card">
-			<div on-click="_toggleCollapse">
-				<h1>[[title]]</h1>
-				<h4>[[subTitle]]</h4>
+			<div class="heading" on-click="_toggleCollapse">
+				<div class="left">
+					<h1>[[title]]</h1>
+					<h4>[[subTitle]]</h4>
+				</div>
+				<div class="right">
+					<slot name="actionIcon"></slot>
+				</div>
 			</div>
 			<iron-collapse id="collapse" opened="{{opened}}">
 				<slot></slot>

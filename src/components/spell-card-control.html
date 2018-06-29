@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../components/card-wrapper.html">
 
@@ -48,25 +49,30 @@
             }
         </style>
         <card-wrapper title="[[spell.displayName]]" sub-title="[[_calculateSubTitle(spell)]]">
-            <ul class="flex-outer">
-                <li>
-                    <label class="attributes" for="castingTime"> Casting Time: </label>
-                    <span id="castingTime">[[spell.castingTime]]</span>
-                </li>
-                <li>
-                    <label class="attributes" for="range"> Range: </label>
-                    <span id="range">[[_calculateRange(spell)]]</span>
-                </li>
-                <li>
-                    <label class="attributes" for="components"> Components: </label>
-                    <span id="components">[[_calculateComponents(spell)]]</span>
-                </li>
-                <li>
-                    <label class="attributes" for="duration"> Duration: </label>
-                    <span id="duration">[[spell.duration]]</span>
-                </li>
-            </ul>
-            <span class="description">[[spell.description]]</span>
+            <div>
+                <ul class="flex-outer">
+                    <li>
+                        <label class="attributes" for="castingTime"> Casting Time: </label>
+                        <span id="castingTime">[[spell.castingTime]]</span>
+                    </li>
+                    <li>
+                        <label class="attributes" for="range"> Range: </label>
+                        <span id="range">[[_calculateRange(spell)]]</span>
+                    </li>
+                    <li>
+                        <label class="attributes" for="components"> Components: </label>
+                        <span id="components">[[_calculateComponents(spell)]]</span>
+                    </li>
+                    <li>
+                        <label class="attributes" for="duration"> Duration: </label>
+                        <span id="duration">[[spell.duration]]</span>
+                    </li>
+                </ul>
+                <span class="description">[[spell.description]]</span>
+            </div>
+            <paper-button on-tap="_removeCard" slot="actionIcon">
+                <iron-icon icon="clear"></iron-icon>Remove
+            </paper-button>
         </card-wrapper>
     </template>
 
@@ -121,6 +127,10 @@
 
                 mergedComponents = `${components.join(", ")} (${mergedComponents})`;
                 return mergedComponents;
+            }
+
+            _removeCard() {
+                this.dispatchEvent(new CustomEvent('remove-spell-card', { detail: { spell: this.spell } }));
             }
         }
 

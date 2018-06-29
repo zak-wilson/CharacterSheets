@@ -23,7 +23,7 @@
         </div>
         <div>
             <template is="dom-repeat" items="{{_selectedSpells}}">
-                <spell-card-control spell="[[item]]"></spell-card-control>
+                <spell-card-control spell="[[item]]" on-remove-spell-card="_removeSpellCard"></spell-card-control>
             </template>
         </div>
     </template>
@@ -57,6 +57,10 @@
                 let spellsToShow = spellsToReview.filter(value => -1 === spellsSelected.indexOf(value));
                 return spellsToShow;
             };
+
+            _removeSpellCard(event) {
+                this.pop('_selectedSpells', event.detail.spell);
+            }
         }
 
         window.customElements.define(SpellsControl.is, SpellsControl);
