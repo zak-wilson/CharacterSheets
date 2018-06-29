@@ -1,0 +1,158 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../components/card-wrapper.html">
+<link rel="import" href="../components/proficiency-control.html">
+<link rel="import" href="../components/stat-control.html">
+
+<dom-module id="stat-page">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            .strength {
+                --main-stat-colour: red;
+            }
+
+            .dexterity {
+                --main-stat-colour: green;
+            }
+
+            .constitution {
+                --main-stat-colour: orange;
+            }
+
+            .intelligence {
+                --main-stat-colour: blue;
+            }
+
+            .wisdom {
+                --main-stat-colour: yellow;
+            }
+
+            .charisma {
+                --main-stat-colour: purple;
+            }
+
+            .flexInline {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+        </style>
+
+        <card-wrapper title="Stats">
+            <div class="flexInline">
+                <stat-control class="strength" stat="Strength" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                    selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_strengthSkills]]"
+                    saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Strength')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Strength, selectedSubrace.AbilityScoreBonus.Strength, selectedClass.AbilityScoreBonus.Strength)]]"></stat-control>
+                <stat-control class="dexterity" stat="Dexterity" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                    selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_dexteritySkills]]"
+                    saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Dexterity')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Dexterity, selectedSubrace.AbilityScoreBonus.Dexterity, selectedClass.AbilityScoreBonus.Dexterity)]]"></stat-control>
+                <stat-control class="constitution" stat="Constitution" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                    selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_constitutionSkills]]"
+                    saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Constitution')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Constitution, selectedSubrace.AbilityScoreBonus.Constitution, selectedClass.AbilityScoreBonus.Constitution)]]"></stat-control>
+                <stat-control class="intelligence" stat="Intelligence" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                    selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_intelligenceSkills]]"
+                    saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Intelligence')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Intelligence, selectedSubrace.AbilityScoreBonus.Intelligence, selectedClass.AbilityScoreBonus.Intelligence)]]"></stat-control>
+                <stat-control class="wisdom" stat="Wisdom" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                    selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_wisdomSkills]]"
+                    saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Wisdom')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Wisdom, selectedSubrace.AbilityScoreBonus.Wisdom, selectedClass.AbilityScoreBonus.Wisdom)]]"></stat-control>
+                <stat-control class="charisma" stat="Charisma" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                    selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_charismaSkills]]"
+                    saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Charisma')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Charisma, selectedSubrace.AbilityScoreBonus.Charisma, selectedClass.AbilityScoreBonus.Charisma)]]"></stat-control>
+            </div>
+        </card-wrapper>
+    </template>
+
+    <script>
+        Polymer.setPassiveTouchGestures(true);
+
+        class StatPage extends Polymer.Element {
+            static get is() { return 'stat-page'; }
+
+            static get properties() {
+                return {
+                    selectedRace: Object,
+                    selectedSubrace: Object,
+                    selectedClass: Object,
+                    _selectedSkills: {
+                        type: Array,
+                        value: []
+                    },
+                    _staticSkills: {
+                        type: Array,
+                        value: [],
+                        computed: '_collectionCombiner(selectedRace.Skills, selectedSubrace.Skills)'
+                    },
+                    _strengthSkills: {
+                        type: Array,
+                        value: [
+                            "Athletics"
+                        ]
+                    },
+                    _dexteritySkills: {
+                        type: Array,
+                        value: [
+                            "Acrobatics",
+                            "Sleight of Hand",
+                            "Stealth"
+                        ]
+                    },
+                    _constitutionSkills: {
+                        type: Array,
+                        value: []
+                    },
+                    _intelligenceSkills: {
+                        type: Array,
+                        value: [
+                            "Arcana",
+                            "History",
+                            "Investigation",
+                            "Nature",
+                            "Religion"
+                        ]
+                    },
+                    _wisdomSkills: {
+                        type: Array,
+                        value: [
+                            "Animal Handling",
+                            "Insight",
+                            "Medicine",
+                            "Perception",
+                            "Survival"
+                        ]
+                    },
+                    _charismaSkills: {
+                        type: Array,
+                        value: [
+                            "Deception",
+                            "Intimidation",
+                            "Performance",
+                            "Persuasion"
+                        ]
+                    }
+                };
+            }
+
+            _getStatBonus(race, subrace, selectedClass) {
+                return race || 0 + subrace || 0 + selectedClass || 0;
+            }
+
+            _collectionCombiner(collection, collection2) {
+                return (collection || []).concat(collection2 || []);
+            }
+            _collectionContains(collection, value) {
+                return (collection || []).includes(value);
+            }
+        }
+
+        window.customElements.define(StatPage.is, StatPage);
+    </script>
+</dom-module>

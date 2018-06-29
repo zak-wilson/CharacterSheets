@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
@@ -7,6 +8,7 @@
 <link rel="import" href="../components/card-wrapper.html">
 <link rel="import" href="../components/proficiency-control.html">
 <link rel="import" href="../components/stat-control.html">
+<link rel="import" href="./stat-page.html">
 
 <dom-module id="character-sheet-creator">
 	<template>
@@ -74,16 +76,7 @@
 				</template>
 			</div>
 		</card-wrapper>
-		<card-wrapper title="Stats">
-			<div class="flexInline">
-				<stat-control class="strength" stat="Strength" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Strength')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Strength, _selectedSubrace.AbilityScoreBonus.Strength, _selectedClass.AbilityScoreBonus.Strength)]]"></stat-control>
-				<stat-control class="dexterity" stat="Dexterity" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Dexterity')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Dexterity, _selectedSubrace.AbilityScoreBonus.Dexterity, _selectedClass.AbilityScoreBonus.Dexterity)]]"></stat-control>
-				<stat-control class="constitution" stat="Constitution" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Constitution')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Constitution, _selectedSubrace.AbilityScoreBonus.Constitution, _selectedClass.AbilityScoreBonus.Constitution)]]"></stat-control>
-				<stat-control class="intelligence" stat="Intelligence" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Intelligence')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Intelligence, _selectedSubrace.AbilityScoreBonus.Intelligence, _selectedClass.AbilityScoreBonus.Intelligence)]]"></stat-control>
-				<stat-control class="wisdom" stat="Wisdom" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Wisdom')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Wisdom, _selectedSubrace.AbilityScoreBonus.Wisdom, _selectedClass.AbilityScoreBonus.Wisdom)]]"></stat-control>
-				<stat-control class="charisma" stat="Charisma" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Charisma')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Charisma, _selectedSubrace.AbilityScoreBonus.Charisma, _selectedClass.AbilityScoreBonus.Charisma)]]"></stat-control>
-			</div>
-		</card-wrapper>
+		<stat-page selected-class="[[_selectedClass]]" selected-race="[[_selectedRace]]" selected-subrace="[[_selectedSubrace]]"></stat-page>
 		<card-wrapper title="Proficiencies">
 			<proficiency-control type="Weapon" race="[[_selectedRace.Proficiencies.Weapon]]" subrace="[[_selectedSubrace.Proficiencies.Weapon]]" selected-class="[[_selectedClass.Proficiencies.Weapon]]"></proficiency-control>
 			<proficiency-control type="Armour" race="[[_selectedRace.Proficiencies.Armour]]" subrace="[[_selectedSubrace.Proficiencies.Armour]]" selected-class="[[_selectedClass.Proficiencies.Armour]]"></proficiency-control>
@@ -97,7 +90,7 @@
 
 		</card-wrapper>
 		<card-wrapper title="Equipment">
-
+			<paper-textarea></paper-textarea>
 		</card-wrapper>
 	</template>
 
