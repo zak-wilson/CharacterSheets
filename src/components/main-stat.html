@@ -1,0 +1,72 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+
+<dom-module id="main-stat">
+    <template>
+        <style>
+            :host {
+                display: flex;
+                justify-content: center;
+            }
+
+            .circle {
+                width: 50px;
+                height: 50px;
+                border: 20px solid var(--main-stat-colour, red);
+                border-radius: 50%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin-right: 10px;
+            }
+
+            .mainStat {
+                width: 80%;
+                text-align: center;
+                margin-top: -30%;
+                --paper-input-container-underline: {
+                    display: none;
+                }
+                --paper-input-container-disabled: {
+                    opacity: 1;
+                }
+            }
+        </style>
+
+        <div class="circle">
+            <paper-input class="mainStat" disabled$="[[readonly]]" required value="{{value}}">
+                <template is="dom-if" if="[[bonus]]" restamp>
+                    <div slot="suffix">+[[bonus]]</div>
+                </template>
+            </paper-input>
+        </div>
+    </template>
+
+    <script>
+        Polymer.setPassiveTouchGestures(true);
+
+        class MainStat extends Polymer.Element {
+            static get is() { return 'main-stat'; }
+
+            static get properties() {
+                return {
+                    value: {
+                        type: Number,
+                        value: 0
+                    },
+                    bonus: Number,
+                    readonly: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
+        }
+
+        window.customElements.define(MainStat.is, MainStat);
+    </script>
+</dom-module>

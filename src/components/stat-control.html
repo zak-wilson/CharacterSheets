@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="./main-stat.html">
 
 <dom-module id="stat-control">
 	<template>
@@ -11,30 +12,6 @@
 				flex: 1 0 25%;
 				margin: 5px;
 				justify-content: center;
-			}
-
-			.circle {
-				width: 50px;
-				height: 50px;
-				border: 20px solid var(--main-stat-colour, red);
-				border-radius: 50%;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				align-items: center;
-				margin-right: 10px;
-			}
-
-			.mainStat {
-				width: 80%;
-				text-align: center;
-				margin-top: -30%;
-				--paper-input-container-underline: {
-					display: none;
-				}
-				--paper-input-container-disabled: {
-					opacity: 1;
-				}
 			}
 
 			.secondaryStat {
@@ -78,13 +55,7 @@
 			}
 		</style>
 
-		<div class="circle">
-			<paper-input class="mainStat" disabled$="[[readonly]]" required value="{{value}}">
-				<template is="dom-if" if="[[bonus]]" restamp>
-					<div slot="suffix">+[[bonus]]</div>
-				</template>
-			</paper-input>
-		</div>
+		<main-stat bonus="[[bonus]]" value="{{value}}"></main-stat>
 		<div class="flexColumn">
 			<h2>[[stat]]</h2>
 			<template is="dom-if" if="[[savingThrow]]" restamp>
