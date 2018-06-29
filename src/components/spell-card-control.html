@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="spell-card-control">
+    <template>
+        <style>
+            .title {
+                color: blue
+            }
+        </style>
+        <div class="title">
+            [[spell.displayName]]
+        </div>
+        <div>
+            <label>
+                Casting Time:
+                <span>[[spell.castingTime]]</span>
+            </label>
+            <label>
+                Duration:
+                <span>[[spell.duration]]</span>
+            </label>
+            <label>
+                Range:
+                <span>[[spell.range]]</span>
+            </label>
+        </div>
+        <div>
+
+        </div>
+    </template>
+
+    <script>
+        Polymer.setPassiveTouchGestures(true);
+
+        class SpellCardControl extends Polymer.Element {
+            static get is() { return 'spell-card-control'; }
+
+            static get properties() {
+                return {
+                    spell: Object
+                };
+            }
+        }
+
+        window.customElements.define(SpellCardControl.is, SpellCardControl);
+    </script>
+</dom-module>
