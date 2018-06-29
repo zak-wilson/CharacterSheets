@@ -5,34 +5,69 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../components/card-wrapper.html">
 
 <dom-module id="spell-card-control">
     <template>
         <style>
-            .title {
-                color: blue
+            .attributes {
+                display: flex;
+                font-weight: 700;
+            }
+
+            .description {
+                display: block;
+                padding-top: 15px;
+            }
+
+            .flex-outer {
+                list-style-type: none;
+                padding: 0;
+                margin: 0 auto;
+            }
+
+            .flex-outer li {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+
+            .flex-outer li label {
+                font-weight: 300;
+                letter-spacing: .09em;
+                text-transform: uppercase;
+            }
+
+            .flex-outer>li>label {
+                flex: 1 0 120px;
+                max-width: 150px;
+            }
+
+            .flex-outer>li>label+* {
+                flex: 1 0 220px;
             }
         </style>
-        <div class="title">
-            [[spell.displayName]]
-        </div>
-        <div>
-            <label>
-                Casting Time:
-                <span>[[spell.castingTime]]</span>
-            </label>
-            <label>
-                Duration:
-                <span>[[spell.duration]]</span>
-            </label>
-            <label>
-                Range:
-                <span>[[spell.range]]</span>
-            </label>
-        </div>
-        <div>
-
-        </div>
+        <card-wrapper title="[[spell.displayName]]" sub-title="[[_calculateSubTitle(spell)]]">
+            <ul class="flex-outer">
+                <li>
+                    <label class="attributes" for="castingTime"> Casting Time: </label>
+                    <span id="castingTime">[[spell.castingTime]]</span>
+                </li>
+                <li>
+                    <label class="attributes" for="range"> Range: </label>
+                    <span id="range">[[_calculateRange(spell)]]</span>
+                </li>
+                <li>
+                    <label class="attributes" for="components"> Components: </label>
+                    <span id="components">[[_calculateComponents(spell)]]</span>
+                </li>
+                <li>
+                    <label class="attributes" for="duration"> Duration: </label>
+                    <span id="duration">[[spell.duration]]</span>
+                </li>
+            </ul>
+            <span class="description">[[spell.description]]</span>
+        </card-wrapper>
     </template>
 
     <script>
@@ -45,6 +80,47 @@
                 return {
                     spell: Object
                 };
+            }
+
+            _calculateSubTitle(spell) {
+                let subTitle = "";
+
+                if (spell.restrictions.level) {
+                    subTitle += `${spell.restrictions.level}-level`;
+                }
+
+                if (spell.restrictions.school) {
+                    if (subTitle) {
+                        subTitle += ' ';
+                    }
+                    subTitle += `${spell.restrictions.school}`;
+                }
+
+                return subTitle;
+            }
+
+            _calculateRange(spell) {
+                return spell.target === "self" ? `Self (${spell.range})` : spell.range;
+            }
+
+            _calculateComponents(spell) {
+                let components = [];
+                if (spell.components.verbal) {
+                    components.push("V");
+                }
+
+                if (spell.components.somatic) {
+                    components.push("S");
+                }
+
+                let mergedComponents = null;
+                if (spell.components.material && spell.components.material.length > 0) {
+                    components.push("M");
+                    mergedComponents = spell.components.material.join(", ");
+                }
+
+                mergedComponents = `${components.join(", ")} (${mergedComponents})`;
+                return mergedComponents;
             }
         }
 

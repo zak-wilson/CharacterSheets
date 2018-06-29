@@ -14,16 +14,21 @@
 			}
 
 			h1 {
-				margin: 16px 0;
+				margin: 16px 0 5px 0;
 				color: #212121;
 				font-size: 22px;
 				cursor: pointer;
+			}
+
+			h4 {
+				margin: 5px 0 16px 0;
 			}
 		</style>
 
 		<div class="card">
 			<div on-click="_toggleCollapse">
 				<h1>[[title]]</h1>
+				<h4>[[subTitle]]</h4>
 			</div>
 			<iron-collapse id="collapse" opened="{{opened}}">
 				<slot></slot>
@@ -40,6 +45,7 @@
 			static get properties() {
 				return {
 					title: String,
+					subTitle: String,
 					opened: {
 						type: Boolean,
 						value: false,
