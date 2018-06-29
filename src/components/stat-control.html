@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="./main-stat.html">
+<link rel="import" href="./skill-control.html">
 
 <dom-module id="stat-control">
 	<template>
@@ -12,29 +13,6 @@
 				flex: 1 0 25%;
 				margin: 5px;
 				justify-content: center;
-			}
-
-			.secondaryStat {
-				width: 10%;
-				margin-top: -12px;
-				margin-left: 5px;
-				text-align: center;
-				--paper-input-container-disabled: {
-					opacity: 1;
-				}
-				--paper-font-caption: {
-					line-height: 0;
-				}
-				--paper-input-container-shared-input-style: {
-					width: 100%;
-					font-size: 12px;
-				}
-				--paper-input-container-input: {
-					margin-bottom: -5px;
-				}
-				--paper-input-container-underline-disabled: {
-					border-bottom-style: solid;
-				}
 			}
 
 			h2 {
@@ -55,25 +33,16 @@
 			}
 		</style>
 
-		<main-stat bonus="[[bonus]]" value="{{value}}"></main-stat>
+		<main-stat bonus="[[bonus]]" modifier="{{modifier}}" value="{{value}}"></main-stat>
 		<div class="flexColumn">
 			<h2>[[stat]]</h2>
 			<template is="dom-if" if="[[savingThrow]]" restamp>
-				<div class="flex">
-					<label>Saving Throw</label>
-					<paper-input class="secondaryStat" disabled value="[[bonus]]"></paper-input>
-				</div>
+				<skill-control name="Saving Throw" proficiency-bonus="[[proficiencyBonus]]" modifier="[[modifier]]" required></skill-control>
 			</template>
-			<iron-selector attr-for-selected="name" selected-attribute="checked" multi selected-values="{{selectedSkills}}">
-				<template is="dom-repeat" items="[[skills]]">
-					<paper-checkbox name="[[item]]">
-						<div class="flex">
-							<label>[[item]]</label>
-							<paper-input class="secondaryStat" disabled value="[[_isSelected(item, selectedSkills, bonus)]]"></paper-input>
-						</div>
-					</paper-checkbox>
-				</template>
-			</iron-selector>
+			<template is="dom-repeat" items="[[skills]]">
+				<skill-control name="[[item]]" checked$="[[_isChecked(staticSkills, item)]]" proficiency-bonus="[[proficiencyBonus]]" modifier="[[modifier]]"
+				 disabled$="[[!_isSelectable(selectedSkills, selectableSkills, staticSkills, item)]]" on-checked-changed="_skillSelectedChanged"></skill-control>
+			</template>
 		</div>
 	</template>
 
@@ -91,13 +60,22 @@
 						value: 0
 					},
 					bonus: Number,
+					modifier: {
+						type: Number
+					},
+					proficiencyBonus: Number,
 					savingThrow: {
 						type: Boolean,
 						value: false,
 						reflectToAttribute: true
 					},
 					skills: Array,
-					selectedSkills: Array,
+					selectedSkills: {
+						type: Array,
+						notify: true
+					},
+					selectableSkills: Object,
+					staticSkills: Array,
 					readonly: {
 						type: Boolean,
 						value: false,
@@ -106,8 +84,26 @@
 				};
 			}
 
-			_isSelected(skill, selectedSkills, bonus) {
-				return selectedSkills.includes(skill) && bonus || null;
+			_skillSelectedChanged(e) {
+				var checked = e.detail.value;
+				var value = e.target.name;
+
+				if(this.staticSkills.includes(value)) return;
+				if (checked) this.selectedSkills = this.selectedSkills.concat(value);
+				else this.selectedSkills = this.selectedSkills.filter((skill) => skill !== value);
+			}
+
+			_isSelectable(selectedSkills, selectableSkills, staticSkills, skill) {
+				var numSelected = (selectedSkills || []).length;
+				var maxSelectable = selectableSkills && selectableSkills.Choose || 0;
+
+				var alreadySelected = (selectedSkills || []).includes(skill);
+				var isSelectable = (selectableSkills && selectableSkills.Options || []).includes(skill)
+				var isStatic = staticSkills.includes(skill);
+				return !isStatic && numSelected < maxSelectable && isSelectable || alreadySelected;
+			}
+			_isChecked(staticSkills, skill) {
+				return staticSkills.includes(skill);
 			}
 		}
 

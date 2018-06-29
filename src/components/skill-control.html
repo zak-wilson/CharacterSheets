@@ -1,0 +1,94 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<dom-module id="skill-control">
+    <template>
+        <style>
+            :host {
+                display: flex;
+                align-content: center;
+            }
+
+            .skill {
+                width: 10%;
+                margin-top: -12px;
+                margin-left: 5px;
+                text-align: center;
+                --paper-input-container-disabled: {
+                    opacity: 1;
+                }
+                --paper-font-caption: {
+                    line-height: 0;
+                }
+                --paper-input-container-shared-input-style: {
+                    width: 100%;
+                    font-size: 12px;
+                }
+                --paper-input-container-input: {
+                    margin-bottom: -5px;
+                }
+                --paper-input-container-underline-disabled: {
+                    border-bottom-style: solid;
+                }
+            }
+
+            label {
+                font-size: 12px;
+            }
+
+            .flex {
+                display: flex;
+            }
+        </style>
+
+        <div class="flex">
+            <template is="dom-if" if="[[!required]]">
+                <paper-checkbox checked="{{checked}}" disabled$="[[disabled]]"></paper-checkbox>
+            </template>
+            <label>[[name]]</label>
+            <paper-input class="skill" disabled value="[[value]]"></paper-input>
+        </div>
+    </template>
+
+    <script>
+        Polymer.setPassiveTouchGestures(true);
+
+        class SkillControl extends Polymer.Element {
+            static get is() { return 'skill-control'; }
+
+            static get properties() {
+                return {
+                    name: String,
+                    value: {
+                        type: Number,
+                        computed: '_getValue(required, checked, proficiencyBonus, modifier)'
+                    },
+                    proficiencyBonus: Number,
+                    modifier: Number,
+                    checked: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+                    required: {
+                        type: Boolean,
+                        value: false,
+						reflectToAttribute: true
+                    },
+                    disabled: {
+                        type: Boolean,
+                        value: false,
+						reflectToAttribute: true
+                    }
+                };
+            }
+
+            _getValue(required, checked, proficiencyBonus, modifier) {
+                return (required || checked) && proficiencyBonus + modifier || modifier;
+            }
+        }
+
+        window.customElements.define(SkillControl.is, SkillControl);
+    </script>
+</dom-module>

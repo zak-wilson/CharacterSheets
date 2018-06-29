@@ -76,12 +76,12 @@
 		</card-wrapper>
 		<card-wrapper title="Stats">
 			<div class="flexInline">
-				<stat-control class="strength" stat="Strength" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Strength')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Strength, _selectedSubrace.AbilityScoreBonus.Strength, _selectedClass.AbilityScoreBonus.Strength)]]"></stat-control>
-				<stat-control class="dexterity" stat="Dexterity" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Dexterity')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Dexterity, _selectedSubrace.AbilityScoreBonus.Dexterity, _selectedClass.AbilityScoreBonus.Dexterity)]]"></stat-control>
-				<stat-control class="constitution" stat="Constitution" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Constitution')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Constitution, _selectedSubrace.AbilityScoreBonus.Constitution, _selectedClass.AbilityScoreBonus.Constitution)]]"></stat-control>
-				<stat-control class="intelligence" stat="Intelligence" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Intelligence')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Intelligence, _selectedSubrace.AbilityScoreBonus.Intelligence, _selectedClass.AbilityScoreBonus.Intelligence)]]"></stat-control>
-				<stat-control class="wisdom" stat="Wisdom" skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Wisdom')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Wisdom, _selectedSubrace.AbilityScoreBonus.Wisdom, _selectedClass.AbilityScoreBonus.Wisdom)]]"></stat-control>
-				<stat-control class="charisma" stat="Charisma" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Charisma')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Charisma, _selectedSubrace.AbilityScoreBonus.Charisma, _selectedClass.AbilityScoreBonus.Charisma)]]"></stat-control>
+				<stat-control class="strength" stat="Strength" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Strength')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Strength, _selectedSubrace.AbilityScoreBonus.Strength, _selectedClass.AbilityScoreBonus.Strength)]]"></stat-control>
+				<stat-control class="dexterity" stat="Dexterity" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Dexterity')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Dexterity, _selectedSubrace.AbilityScoreBonus.Dexterity, _selectedClass.AbilityScoreBonus.Dexterity)]]"></stat-control>
+				<stat-control class="constitution" stat="Constitution" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Constitution')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Constitution, _selectedSubrace.AbilityScoreBonus.Constitution, _selectedClass.AbilityScoreBonus.Constitution)]]"></stat-control>
+				<stat-control class="intelligence" stat="Intelligence" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Intelligence')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Intelligence, _selectedSubrace.AbilityScoreBonus.Intelligence, _selectedClass.AbilityScoreBonus.Intelligence)]]"></stat-control>
+				<stat-control class="wisdom" stat="Wisdom" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Wisdom')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Wisdom, _selectedSubrace.AbilityScoreBonus.Wisdom, _selectedClass.AbilityScoreBonus.Wisdom)]]"></stat-control>
+				<stat-control class="charisma" stat="Charisma" static-skills="[[_staticSkills]]" proficiency-bonus="[[_selectedClass.ProficiencyBonus]]" selectable-skills="[[_selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(_selectedClass.SavingThrows, 'Charisma')]]" bonus="[[_getStatBonus(_selectedRace.AbilityScoreBonus.Charisma, _selectedSubrace.AbilityScoreBonus.Charisma, _selectedClass.AbilityScoreBonus.Charisma)]]"></stat-control>
 			</div>
 		</card-wrapper>
 		<card-wrapper title="Proficiencies">
@@ -130,6 +130,15 @@
 					_selectedClassValue: {
 						type: String,
 						observer: '_selectedClassChanged'
+					},
+					_selectedSkills: {
+						type: Array,
+						value: []
+					},
+					_staticSkills: {
+						type: Array,
+						value: [],
+						computed: '_collectionCombiner(_selectedRace.Skills, _selectedSubrace.Skills)'
 					},
 					_strengthSkills: {
 						type: Array,
@@ -218,6 +227,9 @@
 				return race || 0 + subrace || 0 + selectedClass || 0;
 			}
 
+			_collectionCombiner(collection, collection2){
+				return (collection || []).concat(collection2 || []);
+			}
 			_collectionContains(collection, value) {
 				return (collection || []).includes(value);
 			}

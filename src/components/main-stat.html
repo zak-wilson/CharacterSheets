@@ -1,7 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
-<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 
 <dom-module id="main-stat">
     <template>
@@ -37,7 +35,7 @@
         </style>
 
         <div class="circle">
-            <paper-input class="mainStat" disabled$="[[readonly]]" required value="{{value}}">
+            <paper-input class="mainStat" disabled$="[[readonly]]" required value="{{_value}}">
                 <template is="dom-if" if="[[bonus]]" restamp>
                     <div slot="suffix">+[[bonus]]</div>
                 </template>
@@ -55,15 +53,57 @@
                 return {
                     value: {
                         type: Number,
+                        computed: '_getValue(_value, bonus)',
+                        notify: true
+                    },
+                    modifier: {
+                        type: Number,
+                        computed: '_getModifier(_modifiers, value, bonus)',
+                        notify: true
+                    },
+                    bonus: {
+                        type: Number,
                         value: 0
                     },
-                    bonus: Number,
                     readonly: {
                         type: Boolean,
                         value: false,
                         reflectToAttribute: true
+                    },
+                    _value: {
+                        type: Number,
+                        value: 0
+                    },
+                    _modifiers: {
+                        type: Array,
+                        value: [
+                            -5,
+                            -4, -4,
+                            -3, -3,
+                            -2, -2,
+                            -1, -1,
+                            0, 0,
+                            1, 1,
+                            2, 2,
+                            3, 3,
+                            4, 4,
+                            5, 5,
+                            6, 6,
+                            7, 7,
+                            8, 8,
+                            9, 9,
+                            10
+                        ]
                     }
                 };
+            }
+
+            _getValue(value, bonus) {
+                return Number(value) || 0 + bonus;
+            }
+            _getModifier(modifiers, value, bonus) {
+                if (value <= 0 || value > 30) return 0;
+                return modifiers[value + bonus - 1];
             }
         }
 
