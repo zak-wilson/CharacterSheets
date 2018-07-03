@@ -1,0 +1,139 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../components/card-wrapper.html">
+
+<dom-module id="spell-card-control">
+    <template>
+        <style>
+            .attributes {
+                display: flex;
+                font-weight: 700;
+            }
+
+            .description {
+                display: block;
+                padding-top: 15px;
+            }
+
+            .flex-outer {
+                list-style-type: none;
+                padding: 0;
+                margin: 0 auto;
+            }
+
+            .flex-outer li {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+
+            .flex-outer li label {
+                font-weight: 300;
+                letter-spacing: .09em;
+                text-transform: uppercase;
+            }
+
+            .flex-outer>li>label {
+                flex: 1 0 120px;
+                max-width: 150px;
+            }
+
+            .flex-outer>li>label+* {
+                flex: 1 0 220px;
+            }
+        </style>
+        <card-wrapper title="[[spell.displayName]]" sub-title="[[_calculateSubTitle(spell)]]">
+            <div>
+                <ul class="flex-outer">
+                    <li>
+                        <label class="attributes" for="castingTime"> Casting Time: </label>
+                        <span id="castingTime">[[spell.castingTime]]</span>
+                    </li>
+                    <li>
+                        <label class="attributes" for="range"> Range: </label>
+                        <span id="range">[[_calculateRange(spell)]]</span>
+                    </li>
+                    <li>
+                        <label class="attributes" for="components"> Components: </label>
+                        <span id="components">[[_calculateComponents(spell)]]</span>
+                    </li>
+                    <li>
+                        <label class="attributes" for="duration"> Duration: </label>
+                        <span id="duration">[[spell.duration]]</span>
+                    </li>
+                </ul>
+                <span class="description">[[spell.description]]</span>
+            </div>
+            <paper-button on-tap="_removeCard" slot="actionIcon">
+                <iron-icon icon="clear"></iron-icon>Remove
+            </paper-button>
+        </card-wrapper>
+    </template>
+
+    <script>
+        Polymer.setPassiveTouchGestures(true);
+
+        class SpellCardControl extends Polymer.Element {
+            static get is() { return 'spell-card-control'; }
+
+            static get properties() {
+                return {
+                    spell: Object
+                };
+            }
+
+            _calculateSubTitle(spell) {
+                let subTitle = "";
+
+                if (spell.restrictions.level) {
+                    subTitle += `${spell.restrictions.level}-level`;
+                }
+
+                if (spell.restrictions.school) {
+                    if (subTitle) {
+                        subTitle += ' ';
+                    }
+                    subTitle += `${spell.restrictions.school}`;
+                }
+
+                return subTitle;
+            }
+
+            _calculateRange(spell) {
+                return spell.target === "self" ? `Self (${spell.range})` : spell.range;
+            }
+
+            _calculateComponents(spell) {
+                let components = [];
+                if (spell.components.verbal) {
+                    components.push("V");
+                }
+
+                if (spell.components.somatic) {
+                    components.push("S");
+                }
+
+                let mergedComponents = null;
+                if (spell.components.material && spell.components.material.length > 0) {
+                    components.push("M");
+                    mergedComponents = spell.components.material.join(", ");
+                }
+
+                mergedComponents = `${components.join(", ")} (${mergedComponents})`;
+                return mergedComponents;
+            }
+
+            _removeCard() {
+                this.dispatchEvent(new CustomEvent('remove-spell-card', { detail: { spell: this.spell } }));
+            }
+        }
+
+        window.customElements.define(SpellCardControl.is, SpellCardControl);
+    </script>
+</dom-module>
