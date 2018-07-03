@@ -8,6 +8,7 @@
 <link rel="import" href="../components/card-wrapper.html">
 <link rel="import" href="../components/proficiency-control.html">
 <link rel="import" href="../components/stat-control.html">
+<link rel="import" href="../components/spells-control.html">
 <link rel="import" href="./stat-page.html">
 
 <dom-module id="character-sheet-creator">
@@ -78,13 +79,17 @@
 		</card-wrapper>
 		<stat-page selected-class="[[_selectedClass]]" selected-race="[[_selectedRace]]" selected-subrace="[[_selectedSubrace]]"></stat-page>
 		<card-wrapper title="Proficiencies">
-			<proficiency-control type="Weapon" race="[[_selectedRace.Proficiencies.Weapon]]" subrace="[[_selectedSubrace.Proficiencies.Weapon]]" selected-class="[[_selectedClass.Proficiencies.Weapon]]"></proficiency-control>
-			<proficiency-control type="Armour" race="[[_selectedRace.Proficiencies.Armour]]" subrace="[[_selectedSubrace.Proficiencies.Armour]]" selected-class="[[_selectedClass.Proficiencies.Armour]]"></proficiency-control>
-			<proficiency-control type="Tool" race="[[_selectedRace.Proficiencies.Tool]]" subrace="[[_selectedSubrace.Proficiencies.Tool]]" selected-class="[[_selectedClass.Proficiencies.Tool]]"></proficiency-control>
-			<proficiency-control type="Language" race="[[_selectedRace.Proficiencies.Language]]" subrace="[[_selectedSubrace.Proficiencies.Language]]" selected-class="[[_selectedClass.Proficiencies.Language]]"></proficiency-control>
+			<proficiency-control type="Weapon" race="[[_selectedRace.Proficiencies.Weapon]]" subrace="[[_selectedSubrace.Proficiencies.Weapon]]"
+			 selected-class="[[_selectedClass.Proficiencies.Weapon]]"></proficiency-control>
+			<proficiency-control type="Armour" race="[[_selectedRace.Proficiencies.Armour]]" subrace="[[_selectedSubrace.Proficiencies.Armour]]"
+			 selected-class="[[_selectedClass.Proficiencies.Armour]]"></proficiency-control>
+			<proficiency-control type="Tool" race="[[_selectedRace.Proficiencies.Tool]]" subrace="[[_selectedSubrace.Proficiencies.Tool]]"
+			 selected-class="[[_selectedClass.Proficiencies.Tool]]"></proficiency-control>
+			<proficiency-control type="Language" race="[[_selectedRace.Proficiencies.Language]]" subrace="[[_selectedSubrace.Proficiencies.Language]]"
+			 selected-class="[[_selectedClass.Proficiencies.Language]]"></proficiency-control>
 		</card-wrapper>
 		<card-wrapper title="Spells">
-
+			<spells-control spells="[[_spells]]"></spells-control>
 		</card-wrapper>
 		<card-wrapper title="Items">
 
@@ -107,6 +112,7 @@
 						value: "Character Sheet Creator"
 					},
 					_races: Object,
+					_spells: Object,
 					_subraces: Array,
 					_selectedRace: Object,
 					_selectedRaceValue: {
@@ -187,6 +193,7 @@
 				super();
 				this._fileLoader('src/data/races.json', (data) => this._races = data);
 				this._fileLoader('src/data/classes.json', (data) => this._classes = data);
+				this._fileLoader('src/data/spells.json', (data) => this._spells = data);
 			}
 
 			_selectedRaceChanged(race) {
