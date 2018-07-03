@@ -72,11 +72,11 @@
                 <div class="flex">
                     <div class="flexColumn">
                         <label>Hit Points</label>
-                        <paper-input class="visibleDisabled" value="[[_getHitPoints(selectedClass.HitDice, _constitutionModifier)]]"></paper-input>
+                        <paper-input class="visibleDisabled" value="[[_getHitPoints(hitDice, _constitutionModifier)]]"></paper-input>
                     </div>
                     <div class="flexColumn">
                         <label>Max Hit Points</label>
-                        <paper-input class="visibleDisabled" value="[[_getHitPoints(selectedClass.HitDice, _constitutionModifier)]]"></paper-input>
+                        <paper-input class="visibleDisabled" value="[[_getHitPoints(hitDice, _constitutionModifier)]]"></paper-input>
                     </div>
                 </div>
                 <div class="flexColumn">
@@ -106,23 +106,23 @@
             </div>
             <div class="flexInline">
                 <stat-control class="strength" stat="Strength" modifier="{{_strengthModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="{{_selectedSkills}}" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Strength')]]"
-                    bonus="[[abilityScoreBonus.Strength]]"></stat-control>
+                    selected-skills="[[_allSkills]]" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Strength')]]"
+                    bonus="[[abilityScoreBonus.strength]]"></stat-control>
                 <stat-control class="dexterity" stat="Dexterity" modifier="{{_dexterityModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="{{_selectedSkills}}" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Dexterity')]]"
-                    bonus="[[abilityScoreBonus.Dexterity]]"></stat-control>
+                    selected-skills="[[_allSkills]]" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Dexterity')]]"
+                    bonus="[[abilityScoreBonus.dexterity]]"></stat-control>
                 <stat-control class="constitution" stat="Constitution" modifier="{{_constitutionModifier}}" static-skills="[[_staticSkills]]"
-                    proficiency-bonus="[[proficiencyBonus]]" selected-skills="{{_selectedSkills}}" skills="[[_constitutionSkills]]"
-                    saving-throw$="[[_collectionContains(savingThrows, 'Constitution')]]" bonus="[[abilityScoreBonus.Constitution]]"></stat-control>
+                    proficiency-bonus="[[proficiencyBonus]]" selected-skills="[[_allSkills]]" skills="[[_constitutionSkills]]"
+                    saving-throw$="[[_collectionContains(savingThrows, 'Constitution')]]" bonus="[[abilityScoreBonus.constitution]]"></stat-control>
                 <stat-control class="intelligence" stat="Intelligence" modifier="{{_intelligenceModifier}}" static-skills="[[_staticSkills]]"
-                    proficiency-bonus="[[proficiencyBonus]]" selected-skills="{{_selectedSkills}}" skills="[[_intelligenceSkills]]"
-                    saving-throw$="[[_collectionContains(savingThrows, 'Intelligence')]]" bonus="[[abilityScoreBonus.Intelligence]]"></stat-control>
+                    proficiency-bonus="[[proficiencyBonus]]" selected-skills="[[_allSkills]]" skills="[[_intelligenceSkills]]"
+                    saving-throw$="[[_collectionContains(savingThrows, 'Intelligence')]]" bonus="[[abilityScoreBonus.intelligence]]"></stat-control>
                 <stat-control class="wisdom" stat="Wisdom" modifier="{{_wisdomModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="{{_selectedSkills}}" skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]"
-                    bonus="[[abilityScoreBonus.Wisdom]]"></stat-control>
+                    selected-skills="[[_allSkills]]" skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]"
+                    bonus="[[abilityScoreBonus.wisdom]]"></stat-control>
                 <stat-control class="charisma" stat="Charisma" modifier="{{_charismaModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="{{_selectedSkills}}" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Charisma')]]"
-                    bonus="[[abilityScoreBonus.Charisma]]"></stat-control>
+                    selected-skills="[[_allSkills]]" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Charisma')]]"
+                    bonus="[[abilityScoreBonus.charisma]]"></stat-control>
             </div>
         </card-wrapper>
     </template>
@@ -142,6 +142,7 @@
                         value: 0
                     },
                     savingThrows: Array,
+                    hitDice: String,
                     selectedRace: Object,
                     selectedSubrace: Object,
                     selectedClass: Object,
@@ -242,7 +243,7 @@
                 return (skillOptions || []).filter((skill) => skill.choose);
             }
             _getAllSkills(skillOptions, selectedSkills) {
-                return skillOptions.filter((skill) => !skill.choose).concat(selectedSkills);
+                return skillOptions.filter((skill) => !skill.choose).concat(selectedSkills).reduce((acc, val) => acc.concat(val), []);
             }
             _getStatBonus(race, subrace, selectedClass) {
                 return (race || 0) + (subrace || 0) + (selectedClass || 0);
@@ -256,7 +257,7 @@
                 return (Number(selectedClass && selectedClass.split('d')[1]) || 0) + (constitution || 0);
             }
 
-            _choicesUpdated(e) {
+            _skillChoicesUpdated(e) {
                 this._selectedSkills[e.target.dataset.id] = e.detail.value;
                 //forces array property update rather than sub property
                 //parse(stringify) = copy object
