@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../components/card-wrapper.html">
 <link rel="import" href="../components/stat-control.html">
+<link rel="import" href="../components/select-multi.html">
 
 <dom-module id="stat-page">
     <template>
@@ -40,6 +41,20 @@
                 justify-content: space-around;
             }
 
+            .flex {
+                display: flex;
+            }
+
+            .flexColumn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 8px;
+                --paper-font-caption: {
+                    line-height: 0;
+                }
+            }
+
             .visibleDisabled {
                 width: 60px;
                 text-align: center;
@@ -54,27 +69,60 @@
 
         <card-wrapper title="Stats">
             <div class="flexInline">
-                <paper-input class="visibleDisabled" label="Hit Points" disabled value="[[_getHitPoints(selectedClass.HitPoints, selectedRace.HitPoints, selectedSubrace.HitPoints, _constitutionModifier)]]"></paper-input>
+                <div class="flex">
+                    <div class="flexColumn">
+                        <label>Hit Points</label>
+                        <paper-input class="visibleDisabled" value="[[_getHitPoints(selectedClass.HitDice, _constitutionModifier)]]"></paper-input>
+                    </div>
+                    <div class="flexColumn">
+                        <label>Max Hit Points</label>
+                        <paper-input class="visibleDisabled" value="[[_getHitPoints(selectedClass.HitDice, _constitutionModifier)]]"></paper-input>
+                    </div>
+                </div>
+                <div class="flexColumn">
+                    <label>Proficiency Bonus</label>
+                    <paper-input class="visibleDisabled" value="{{_proficiencyBonus}}"></paper-input>
+                </div>
+                <div class="flexColumn">
+                    <label>Armour Class</label>
+                    <paper-input class="visibleDisabled" value="{{_armourClass}}"></paper-input>
+                </div>
+                <div class="flexColumn">
+                    <label>Initiative</label>
+                    <paper-input class="visibleDisabled" value="{{_initiative}}"></paper-input>
+                </div>
+                <div class="flexColumn">
+                    <label>Speed</label>
+                    <paper-input class="visibleDisabled" value="{{_speed}}"></paper-input>
+                </div>
             </div>
+            <!-- <div class="flexColumn">
+                <label>Skill Selection:</label>
+                <div class="flexInline">
+                    <template is="dom-if" if="[[_classSkillChoose]]">
+                        <select-multi choose="_classSkillChoose"></select-multi>
+                    </template>
+                </div>
+            </div> -->
             <div class="flexInline">
-                <stat-control class="strength" stat="Strength" modifier="{{_strengthModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                <stat-control class="strength" stat="Strength" modifier="{{_strengthModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[_proficiencyBonus]]"
                     selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_strengthSkills]]"
                     saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Strength')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Strength, selectedSubrace.AbilityScoreBonus.Strength, selectedClass.AbilityScoreBonus.Strength)]]"></stat-control>
-                <stat-control class="dexterity" stat="Dexterity" modifier="{{_dexterityModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                <stat-control class="dexterity" stat="Dexterity" modifier="{{_dexterityModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[_proficiencyBonus]]"
                     selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_dexteritySkills]]"
                     saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Dexterity')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Dexterity, selectedSubrace.AbilityScoreBonus.Dexterity, selectedClass.AbilityScoreBonus.Dexterity)]]"></stat-control>
                 <stat-control class="constitution" stat="Constitution" modifier="{{_constitutionModifier}}" static-skills="[[_staticSkills]]"
-                    proficiency-bonus="[[selectedClass.ProficiencyBonus]]" selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}"
+                    proficiency-bonus="[[_proficiencyBonus]]" selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}"
                     skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Constitution')]]"
                     bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Constitution, selectedSubrace.AbilityScoreBonus.Constitution, selectedClass.AbilityScoreBonus.Constitution)]]"></stat-control>
                 <stat-control class="intelligence" stat="Intelligence" modifier="{{_intelligenceModifier}}" static-skills="[[_staticSkills]]"
-                    proficiency-bonus="[[selectedClass.ProficiencyBonus]]" selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}"
+                    proficiency-bonus="[[_proficiencyBonus]]" selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}"
                     skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Intelligence')]]"
                     bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Intelligence, selectedSubrace.AbilityScoreBonus.Intelligence, selectedClass.AbilityScoreBonus.Intelligence)]]"></stat-control>
-                <stat-control class="wisdom" stat="Wisdom" modifier="{{_wisdomModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                <stat-control class="wisdom" stat="Wisdom" modifier="{{_wisdomModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[_proficiencyBonus]]"
                     selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_wisdomSkills]]"
                     saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Wisdom')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Wisdom, selectedSubrace.AbilityScoreBonus.Wisdom, selectedClass.AbilityScoreBonus.Wisdom)]]"></stat-control>
-                <stat-control class="charisma" stat="Charisma" modifier="{{_charismaModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[selectedClass.ProficiencyBonus]]"
+                <stat-control class="charisma" stat="Charisma" modifier="{{_charismaModifier}}" static-skills="[[_staticSkills]]" proficiency-bonus="[[_proficiencyBonus]]"
                     selectable-skills="[[selectedClass.Skills]]" selected-skills="{{_selectedSkills}}" skills="[[_charismaSkills]]"
                     saving-throw$="[[_collectionContains(selectedClass.SavingThrows, 'Charisma')]]" bonus="[[_getStatBonus(selectedRace.AbilityScoreBonus.Charisma, selectedSubrace.AbilityScoreBonus.Charisma, selectedClass.AbilityScoreBonus.Charisma)]]"></stat-control>
             </div>
@@ -99,7 +147,7 @@
                     _staticSkills: {
                         type: Array,
                         value: [],
-                        computed: '_collectionCombiner(selectedRace.Skills, selectedSubrace.Skills)'
+                        computed: '_collectionCombiner(selectedClass.Skills, selectedRace.Skills, selectedSubrace.Skills)'
                     },
                     _strengthModifier: Number,
                     _dexterityModifier: Number,
@@ -107,6 +155,22 @@
                     _intelligenceModifier: Number,
                     _wisdomModifier: Number,
                     _charismaModifier: Number,
+                    _proficiencyBonus: {
+                        type: Number,
+                        value: 0
+                    },
+                    _armourClass: {
+                        type: Number,
+                        value: 0
+                    },
+                    _initiative: {
+                        type: Number,
+                        value: 0
+                    },
+                    _speed: {
+                        type: Number,
+                        value: 0
+                    },
                     _strengthSkills: {
                         type: Array,
                         value: [
@@ -157,14 +221,22 @@
                 };
             }
 
+            static get observers() {
+                return [
+                    '_setUp(selectedClass, selectedRace, selectedSubRace, _dexterityModifier)'
+                ]
+            }
+
             _getStatBonus(race, subrace, selectedClass) {
                 return (race || 0) + (subrace || 0) + (selectedClass || 0);
             }
-            _getProficiencyBonus(race, subrace, selectedClass) {
-                return (race || 0) + (subrace || 0) + (selectedClass || 0);
+            _setUp(selectedClass, selectedRace, selectedSubRace, dexModifier) {
+                this._proficiencyBonus = selectedClass && selectedClass.ProficiencyBonus || 0;
+                this._speed = (selectedSubRace && selectedSubRace.Speed) || (selectedRace && selectedRace.Speed) || 0;
+                this._initiative = dexModifier || 0;
             }
-            _getHitPoints(race, subrace, selectedClass, constitution) {
-                return (race || 0) + (subrace || 0) + (selectedClass || 0) + (constitution || 0);
+            _getHitPoints(selectedClass, constitution) {
+                return (Number(selectedClass && selectedClass.split('d')[1]) || 0) + (constitution || 0);
             }
 
             _collectionCombiner(collection, collection2) {

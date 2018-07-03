@@ -36,6 +36,7 @@
 		<main-stat bonus="[[bonus]]" modifier="{{modifier}}" value="{{value}}"></main-stat>
 		<div class="flexColumn">
 			<h2>[[stat]]</h2>
+			<skill-control name="Ability Modifier" modifier="[[modifier]]" required></skill-control>
 			<template is="dom-if" if="[[savingThrow]]" restamp>
 				<skill-control name="Saving Throw" proficiency-bonus="[[proficiencyBonus]]" modifier="[[modifier]]" required></skill-control>
 			</template>
@@ -89,7 +90,7 @@
 				var checked = e.detail.value;
 				var value = e.target.name;
 
-				if(this.staticSkills.includes(value)) return;
+				if (this.staticSkills.includes(value)) return;
 				if (checked) this.selectedSkills = this.selectedSkills.concat(value);
 				else this.selectedSkills = this.selectedSkills.filter((skill) => skill !== value);
 			}

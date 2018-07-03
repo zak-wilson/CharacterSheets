@@ -85,7 +85,7 @@
             }
 
             _getValue(required, checked, proficiencyBonus, modifier) {
-                return (required || checked) && proficiencyBonus + modifier || modifier;
+                return (required || checked) && Number(proficiencyBonus) + Number(modifier) || modifier;
             }
         }
 

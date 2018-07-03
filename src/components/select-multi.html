@@ -1,0 +1,54 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<dom-module id="select-multi">
+	<template>
+		<style>
+			paper-listbox {
+				--paper-item-min-height: 0px;
+			}
+		</style>
+
+		<div>
+			<label>Choose [[choose]]:</label>
+			<paper-listbox multi attr-for-selected="name" selected-items="{{_selectedItems}}">
+				<template is="dom-repeat" items="[[options]]">
+					<paper-item disabled$="[[_enoughItemsSelected(choose, selectedValues, item)]]" name="[[item]]">[[item]]</paper-item>
+				</template>
+			</paper-listbox>
+		</div>
+
+	</template>
+
+	<script>
+		Polymer.setPassiveTouchGestures(true);
+
+		class SelectMulti extends Polymer.Element {
+			static get is() { return 'select-multi'; }
+
+			static get properties() {
+				return {
+					choose: Number,
+					options: Array,
+					selectedValues: {
+						type: Array,
+						computed: '_getSelectedValues(_selectedItems)',
+						notify: true
+					},
+					_selectedItems: Array
+				};
+			}
+
+			_getSelectedValues(selectedItems) {
+				return (selectedItems || []).map((item) => item.name);
+			}
+
+			_enoughItemsSelected(maxItems, selectedValues, item) {
+				return selectedValues.length >= maxItems && !selectedValues.includes(item);
+			}
+		}
+
+		window.customElements.define(SelectMulti.is, SelectMulti);
+	</script>
+</dom-module>
