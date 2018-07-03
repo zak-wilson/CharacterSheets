@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
@@ -77,16 +78,13 @@
 				</template>
 			</div>
 		</card-wrapper>
-		<stat-page selected-class="[[_selectedClass]]" selected-race="[[_selectedRace]]" selected-subrace="[[_selectedSubrace]]"></stat-page>
+		<stat-page skill-options="[[_all.skills]]" ability-score-bonus="[[_all.abilityScoreBonus]]" proficiency-bonus="[[_all.proficiencyBonus]]"
+		 saving-throws="[[_all.savingThrows]]" selected-class="[[_selectedClass]]" selected-race="[[_selectedRace]]" selected-subrace="[[_selectedSubrace]]"></stat-page>
 		<card-wrapper title="Proficiencies">
-			<proficiency-control type="Weapon" race="[[_selectedRace.Proficiencies.Weapon]]" subrace="[[_selectedSubrace.Proficiencies.Weapon]]"
-			 selected-class="[[_selectedClass.Proficiencies.Weapon]]"></proficiency-control>
-			<proficiency-control type="Armour" race="[[_selectedRace.Proficiencies.Armour]]" subrace="[[_selectedSubrace.Proficiencies.Armour]]"
-			 selected-class="[[_selectedClass.Proficiencies.Armour]]"></proficiency-control>
-			<proficiency-control type="Tool" race="[[_selectedRace.Proficiencies.Tool]]" subrace="[[_selectedSubrace.Proficiencies.Tool]]"
-			 selected-class="[[_selectedClass.Proficiencies.Tool]]"></proficiency-control>
-			<proficiency-control type="Language" race="[[_selectedRace.Proficiencies.Language]]" subrace="[[_selectedSubrace.Proficiencies.Language]]"
-			 selected-class="[[_selectedClass.Proficiencies.Language]]"></proficiency-control>
+			<proficiency-control type="Weapon" options="[[_all.proficiencies.weapon]]"></proficiency-control>
+			<proficiency-control type="Armour" options="[[_all.proficiencies.armour]]"></proficiency-control>
+			<proficiency-control type="Tool" options="[[_all.proficiencies.tool]]"></proficiency-control>
+			<proficiency-control type="Language" options="[[_all.proficiencies.language]]"></proficiency-control>
 		</card-wrapper>
 		<card-wrapper title="Spells">
 			<spells-control spells="[[_spells]]"></spells-control>
@@ -114,21 +112,34 @@
 					_races: Object,
 					_spells: Object,
 					_subraces: Array,
-					_selectedRace: Object,
+					_selectedRace: {
+						type: Object,
+						value: () => { return {}; }
+					},
 					_selectedRaceValue: {
 						type: String,
 						observer: '_selectedRaceChanged'
 					},
-					_selectedSubrace: Object,
+					_selectedSubrace: {
+						type: Object,
+						value: () => { return {}; }
+					},
 					_selectedSubraceValue: {
 						type: String,
 						observer: '_selectedSubraceChanged'
 					},
 					_classes: Array,
-					_selectedClass: Object,
+					_selectedClass: {
+						type: Object,
+						value: () => { return {}; }
+					},
 					_selectedClassValue: {
 						type: String,
 						observer: '_selectedClassChanged'
+					},
+					_all: {
+						type: Object,
+						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace)'
 					},
 					_selectedSkills: {
 						type: Array,
@@ -227,7 +238,44 @@
 				return race || 0 + subrace || 0 + selectedClass || 0;
 			}
 
-			_collectionCombiner(collection, collection2){
+			_getAll(selectedClass, selectedRace, selectedSubrace) {
+				var sc = selectedClass || {};
+				var sr = selectedRace || {};
+				var ssr = selectedSubrace || {};
+				var all = [sc, sr, ssr];
+				return {
+					abilityScoreBonus: all.map((o) => o.abilityScoreBonus || {}).reduce((acc, val) => {
+						return {
+							strength: acc.strength + (val.strength || 0),
+							dexterity: acc.dexterity + (val.dexterity || 0),
+							constitution: acc.constitution + (val.constitution || 0),
+							intelligence: acc.intelligence + (val.intelligence || 0),
+							wisdom: acc.wisdom + (val.wisdom || 0),
+							charisma: acc.charisma + (val.charisma || 0)
+						}
+					}, { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 }),
+					hitDice: sc.hitDice || '',
+					hitPoints: all.map((o) => o.hitPoints || 0).reduce(this._sum),
+					proficiencies: all.map((o) => o.proficiencies || {}).reduce((acc, val) => {
+						return {
+							weapon: acc.weapon.concat(val.weapon || []),
+							armour: acc.armour.concat(val.armour || []),
+							tool: acc.tool.concat(val.tool || []),
+							language: acc.language.concat(val.language || [])
+						}
+					}, { weapon: [], armour: [], tool: [], language: [] }),
+					proficiencyBonus: all.map((o) => o.proficiencyBonus || 0).reduce(this._sum),
+					savingThrows: all.map((o) => o.savingThrows || []).reduce(this._collectionCombiner, []),
+					skills: all.map((o) => o.skills || []).reduce(this._collectionCombiner, []),
+					speed: all.map((o) => o.speed || 0).reduce(this._sum),
+					traits: all.map((o) => o.traits || []).reduce(this._collectionCombiner, []),
+				};
+			}
+
+			_sum(accumulator, value) {
+				return accumulator + value;
+			}
+			_collectionCombiner(collection, collection2) {
 				return (collection || []).concat(collection2 || []);
 			}
 			_collectionContains(collection, value) {
