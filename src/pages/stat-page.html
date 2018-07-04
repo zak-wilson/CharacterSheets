@@ -96,13 +96,28 @@
                     <paper-input class="visibleDisabled" value="{{speed}}"></paper-input>
                 </div>
             </div>
-            <div class="flexColumn">
-                <label>Skill Selection:</label>
-                <div class="flexInline">
-                    <template is="dom-repeat" items="[[_skillChoices]]">
-                        <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_skillChoicesUpdated" data-id$="[[index]]"></select-multi>
-                    </template>
-                </div>
+            <div class="flexInline">
+                <template is="dom-if" if="[[_skillChoices.length]]">
+                    <div class="flexColumn">
+                        <label>Skill Selection:</label>
+                        <div class="flexInline">
+                            <template is="dom-repeat" items="[[_skillChoices]]">
+                                <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_skillChoicesUpdated" data-id$="[[index]]"></select-multi>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+                <template is="dom-if" if="[[abilityScoreBonus.options.length]]">
+                    <div class="flexColumn">
+                        <label>Ability Score Bonus Selection:</label>
+                        <div class="flexInline">
+                            <template is="dom-repeat" items="[[abilityScoreBonus.options]]">
+                                <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_abilityScoreBonusChoicesUpdated"
+                                    data-id$="[[index]]" data-value$="[[item.value]]"></select-multi>
+                            </template>
+                        </div>
+                    </div>
+                </template>
             </div>
             <div class="flexInline">
                 <stat-control class="strength" stat="Strength" modifier="{{_strengthModifier}}" proficiency-bonus="[[proficiencyBonus]]"
@@ -156,6 +171,10 @@
                         type: Array,
                         value: [],
                         computed: '_getAllSkills(skillOptions, _selectedSkills)'
+                    },
+                    _selectedAbilityScores: {
+                        type: Array,
+                        value: []
                     },
                     _strengthModifier: Number,
                     _dexterityModifier: Number,
@@ -247,6 +266,24 @@
                 this._selectedSkills = JSON.parse(JSON.stringify(this._selectedSkills));
             }
 
+            _abilityScoreBonusChoicesUpdated(e) {
+                var added = this._collectionDiff(e.detail.value, this._selectedAbilityScores[e.target.dataset.id] || []);
+                var removed = this._collectionDiff(this._selectedAbilityScores[e.target.dataset.id] || [], e.detail.value);
+
+                added.forEach(value => {
+                    this.abilityScoreBonus[value] += Number(e.target.dataset.value);
+                });
+                removed.forEach(value => {
+                    this.abilityScoreBonus[value] -= Number(e.target.dataset.value);
+                });
+                this.abilityScoreBonus = JSON.parse(JSON.stringify(this.abilityScoreBonus));
+
+                this._selectedAbilityScores[e.target.dataset.id] = e.detail.value;
+            }
+
+            _collectionDiff(c1, c2) {
+                return c1.filter(o => c2.indexOf(o) < 0);
+            }
             _collectionContains(collection, value) {
                 return (collection || []).includes(value);
             }

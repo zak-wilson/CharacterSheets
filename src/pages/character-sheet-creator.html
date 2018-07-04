@@ -223,9 +223,10 @@
 							constitution: acc.constitution + (val.constitution || 0),
 							intelligence: acc.intelligence + (val.intelligence || 0),
 							wisdom: acc.wisdom + (val.wisdom || 0),
-							charisma: acc.charisma + (val.charisma || 0)
+							charisma: acc.charisma + (val.charisma || 0),
+							options: acc.options.concat(val.options || [])
 						}
-					}, { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 }),
+					}, { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0, options: [] }),
 					hitDice: sc.hitDice || '',
 					hitPoints: all.map((o) => o.hitPoints || 0).reduce(this._sum),
 					proficiencies: all.map((o) => o.proficiencies || {}).reduce((acc, val) => {
