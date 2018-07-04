@@ -52,6 +52,7 @@
 			}
 
 			_getChoices(options) {
+				this._selectedChoices = [];
 				return options.filter(o => o.choose);
 			}
 			_getAllProficiencies(options, selectedChoices) {
