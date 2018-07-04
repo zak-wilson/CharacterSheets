@@ -60,6 +60,15 @@
 						</template>
 					</paper-listbox>
 				</paper-dropdown-menu>
+				<template is="dom-if" if="[[_backgrounds]]" restamp>
+					<paper-dropdown-menu label="Background" value="{{_selectedBackgroundValue}}">
+						<paper-listbox slot="dropdown-content">
+							<template is="dom-repeat" items="{{_backgrounds}}">
+								<paper-item>[[item]]</paper-item>
+							</template>
+						</paper-listbox>
+					</paper-dropdown-menu>
+				</template>
 				<paper-dropdown-menu label="Race" value="{{_selectedRaceValue}}">
 					<paper-listbox slot="dropdown-content">
 						<template is="dom-repeat" items="{{_getObjectKeys(_races)}}">
@@ -138,9 +147,18 @@
 						type: String,
 						observer: '_selectedClassChanged'
 					},
+					_backgrounds: Array,
+					_selectedBackground: {
+						type: Object,
+						value: () => { return {}; }
+					},
+					_selectedBackgroundValue: {
+						type: String,
+						observer: '_selectedBackgroundChanged'
+					},
 					_all: {
 						type: Object,
-						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace)'
+						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace, _selectedBackground)'
 					},
 					_selectedSkills: {
 						type: Array,
@@ -206,6 +224,7 @@
 				this._fileLoader('src/data/races.json', (data) => this._races = data);
 				this._fileLoader('src/data/classes.json', (data) => this._classes = data);
 				this._fileLoader('src/data/spells.json', (data) => this._spells = data);
+				this._fileLoader('src/data/backgrounds.json', (data) => this._backgrounds = data);
 			}
 
 			_selectedRaceChanged(race) {
@@ -234,16 +253,25 @@
 
 				this._fileLoader('src/data/classes/' + selectedClass + '.json', (data) => this._selectedClass = data);
 			}
+			_selectedBackgroundChanged(selectedBackground) {
+				if (!selectedBackground) {
+					this._selectedBackground = null;
+					return;
+				}
+
+				this._fileLoader('src/data/backgrounds/' + selectedBackground + '.json', (data) => this._selectedBackground = data);
+			}
 
 			_getStatBonus(race, subrace, selectedClass) {
 				return race || 0 + subrace || 0 + selectedClass || 0;
 			}
 
-			_getAll(selectedClass, selectedRace, selectedSubrace) {
+			_getAll(selectedClass, selectedRace, selectedSubrace, selectedBackground) {
 				var sc = selectedClass || {};
 				var sr = selectedRace || {};
 				var ssr = selectedSubrace || {};
-				var all = [sc, sr, ssr];
+				var sb = selectedBackground || {};
+				var all = [sc, sr, ssr, sb];
 				return {
 					abilityScoreBonus: all.map((o) => o.abilityScoreBonus || {}).reduce((acc, val) => {
 						return {
