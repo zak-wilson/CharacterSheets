@@ -10,7 +10,28 @@
 <dom-module id="spells-control">
     <template>
         <style>
+            .flexColumn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 8px;
+                --paper-font-caption: {
+                    line-height: 0;
+                }
+            }
         </style>
+        <template is="dom-if" if="[[spellSaveDifficultyClass]]">
+            <div>
+                <label>Spell Save DC:</label>
+                <span>[[spellSaveDifficultyClass]]</span>
+            </div>
+        </template>
+        <template is="dom-if" if="[[spellAttackModifier]]">
+            <div>
+                <label>Spell Attack Modifier:</label>
+                <span>[[spellAttackModifier]]</span>
+            </div>
+        </template>
         <div>
             <paper-dropdown-menu label="Spell">
                 <paper-listbox id="spellSelect" slot="dropdown-content" selected="{{_selectedSpellValue}}">
@@ -37,6 +58,8 @@
             static get properties() {
                 return {
                     spells: Object,
+                    spellSaveDifficultyClass: String,
+                    spellAttackModifier: String,
                     _selectedSpellValue: Number,
                     _selectedSpells: {
                         type: Array,
