@@ -56,8 +56,8 @@
 				return options.filter(o => o.choose);
 			}
 			_getAllProficiencies(options, selectedChoices) {
-				var statics = options.filter(o => !o.choose);
-				var choices = selectedChoices.reduce((acc, val) => acc.concat(val), []);
+				var statics = options.filter(o => !o.choose).concat(options.filter(o => o.choose).map(o=> o.static || []).reduce(this._combineArrays, []));
+				var choices = selectedChoices.reduce(this._combineArrays, []);
 				return [...new Set(statics.concat(choices))];
 			}
 
@@ -70,6 +70,9 @@
 
 			_getCsv(values) {
 				return values.join(', ');
+			}
+			_combineArrays(accumulator, value) {
+				return accumulator.concat(value);
 			}
 		}
 
