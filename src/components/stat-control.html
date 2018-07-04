@@ -41,8 +41,8 @@
 				<skill-control name="Saving Throw" proficiency-bonus="[[proficiencyBonus]]" modifier="[[modifier]]" required></skill-control>
 			</template>
 			<template is="dom-repeat" items="[[skills]]">
-				<skill-control name="[[item]]" checked$="[[_isChecked(staticSkills, item)]]" proficiency-bonus="[[proficiencyBonus]]" modifier="[[modifier]]"
-				 disabled$="[[!_isSelectable(selectedSkills, selectableSkills, staticSkills, item)]]" on-checked-changed="_skillSelectedChanged"></skill-control>
+				<skill-control name="[[item]]" disabled checked$="[[_isChecked(selectedSkills, item)]]" proficiency-bonus="[[proficiencyBonus]]"
+				 modifier="[[modifier]]"></skill-control>
 			</template>
 		</div>
 	</template>
@@ -72,40 +72,12 @@
 						reflectToAttribute: true
 					},
 					skills: Array,
-					selectedSkills: {
-						type: Array,
-						notify: true
-					},
-					selectableSkills: Object,
-					staticSkills: Array,
-					readonly: {
-						type: Boolean,
-						value: false,
-						reflectToAttribute: true
-					}
+					selectedSkills: Array
 				};
 			}
 
-			_skillSelectedChanged(e) {
-				var checked = e.detail.value;
-				var value = e.target.name;
-
-				if (this.staticSkills.includes(value)) return;
-				if (checked) this.selectedSkills = this.selectedSkills.concat(value);
-				else this.selectedSkills = this.selectedSkills.filter((skill) => skill !== value);
-			}
-
-			_isSelectable(selectedSkills, selectableSkills, staticSkills, skill) {
-				var numSelected = (selectedSkills || []).length;
-				var maxSelectable = selectableSkills && selectableSkills.Choose || 0;
-
-				var alreadySelected = (selectedSkills || []).includes(skill);
-				var isSelectable = (selectableSkills && selectableSkills.Options || []).includes(skill)
-				var isStatic = staticSkills.includes(skill);
-				return !isStatic && numSelected < maxSelectable && isSelectable || alreadySelected;
-			}
-			_isChecked(staticSkills, skill) {
-				return staticSkills.includes(skill);
+			_isChecked(skills, skill) {
+				return skills.includes(skill);
 			}
 		}
 

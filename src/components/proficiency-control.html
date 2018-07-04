@@ -18,17 +18,11 @@
 
 		<h4>[[type]]</h4>
 		<div class="flexInline">
-			<template is="dom-if" if="[[_classChoose]]">
-				<select-multi choose="[[_classChoose]]" options="[[_classProficiencies]]" selected-values="{{_selectedClassProficiencies}}"></select-multi>
-			</template>
-			<template is="dom-if" if="[[_raceChoose]]">
-				<select-multi choose="[[_raceChoose]]" options="[[_raceProficiencies]]" selected-values="{{_selectedRaceProficiencies}}"></select-multi>
-			</template>
-			<template is="dom-if" if="[[_subraceChoose]]">
-				<select-multi choose="[[_subraceChoose]]" options="[[_subraceProficiencies]]" selected-values="{{_selectedSubraceProficiencies}}"></select-multi>
+			<template is="dom-repeat" items="[[_choices]]">
+				<select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_choicesUpdated" data-id$="[[index]]"></select-multi>
 			</template>
 		</div>
-		<p>[[_getCsv(_staticProficiencies)]]</p>
+		<p>[[_getCsv(_allProficiencies)]]</p>
 
 	</template>
 
@@ -40,80 +34,39 @@
 
 			static get properties() {
 				return {
-					race: {
-						type: Object,
-						value: null
-					},
-					subrace: {
-						type: Object,
-						value: null
-					},
-					selectedClass: {
-						type: Object,
-						value: null
-					},
 					type: String,
-					_classChoose: {
-						type: Number,
-						computed: '_getRequiresChoose(selectedClass)'
-					},
-					_classProficiencies: {
+					options: Array,
+					_choices: {
 						type: Array,
-						computed: '_getProficiencies(selectedClass, _classChoose)'
+						computed: '_getChoices(options)'
 					},
-					_selectedClassProficiencies: {
+					_selectedChoices: {
 						type: Array,
 						value: []
 					},
-					_raceChoose: {
-						type: Number,
-						computed: '_getRequiresChoose(race)'
-					},
-					_raceProficiencies: {
+					_allProficiencies: {
 						type: Array,
-						computed: '_getProficiencies(race, _raceChoose)'
-					},
-					_selectedRaceProficiencies: {
-						type: Array,
-						value: []
-					},
-					_subraceChoose: {
-						type: Number,
-						computed: '_getRequiresChoose(subrace)'
-					},
-					_subraceProficiencies: {
-						type: Array,
-						computed: '_getProficiencies(subrace, _subraceChoose)'
-					},
-					_selectedSubraceProficiencies: {
-						type: Array,
-						value: []
-					},
-					_staticProficiencies: {
-						type: Array,
-						computed: '_getStaticProficiencies(_raceChoose, _subraceChoose, _classChoose, _raceProficiencies, _subraceProficiencies, _classProficiencies, _selectedRaceProficiencies, _selectedSubraceProficiencies, _selectedClassProficiencies)'
+						computed: '_getAllProficiencies(options, _selectedChoices)'
 					}
 				};
 			}
 
-			_getProficiencies(obj, choose) {
-				return (choose && obj.Options) || obj || [];
+			_getChoices(options) {
+				return options.filter(o => o.choose);
 			}
-			_getRequiresChoose(obj) {
-				if (!obj) return 0;
-				return (obj && !Array.isArray(obj) && obj.Choose) || 0;
-			}
-			_getStaticProficiencies(raceChoose, subraceChoose, classChoose, raceProficiencies, subraceProficiencies, classProficiencies, selectedRaceProficiencies, selectedSubraceProficiencies, selectedClassProficiencies) {
-				var profs = [];
-				profs = profs.concat((classChoose && selectedClassProficiencies) || classProficiencies);
-				profs = profs.concat((raceChoose && selectedRaceProficiencies) || raceProficiencies);
-				profs = profs.concat((subraceChoose && selectedSubraceProficiencies) || subraceProficiencies);
-				return [...new Set(profs)];
+			_getAllProficiencies(options, selectedChoices) {
+				var statics = options.filter(o => !o.choose);
+				var choices = selectedChoices.reduce((acc, val) => acc.concat(val), []);
+				return [...new Set(statics.concat(choices))];
 			}
 
-			_enoughItemsSelected(maxItems, selectedItems, item) {
-				return selectedItems.length >= maxItems && !selectedItems.filter((i) => i.name === item).length;
+			_choicesUpdated(e) {
+				this._selectedChoices[e.target.dataset.id] = e.detail.value;
+				//forces array property update rather than sub property
+				//parse(stringify) = copy object
+				this._selectedChoices = JSON.parse(JSON.stringify(this._selectedChoices));
 			}
+
 			_getCsv(values) {
 				return values.join(', ');
 			}
