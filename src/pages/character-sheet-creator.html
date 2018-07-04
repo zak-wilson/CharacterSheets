@@ -102,7 +102,7 @@
 			<paper-textarea></paper-textarea>
 		</card-wrapper>
 		<card-wrapper title="Equipment">
-			<paper-textarea></paper-textarea>
+			<paper-textarea value="[[_all.equipment]]"></paper-textarea>
 		</card-wrapper>
 	</template>
 
@@ -227,6 +227,7 @@
 							options: acc.options.concat(val.options || [])
 						}
 					}, { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0, options: [] }),
+					equipment: all.map((o) => o.equipment || []).reduce(this._collectionCombiner, []).join('\n'),
 					hitDice: sc.hitDice || '',
 					hitPoints: all.map((o) => o.hitPoints || 0).reduce(this._sum),
 					proficiencies: all.map((o) => o.proficiencies || {}).reduce((acc, val) => {
