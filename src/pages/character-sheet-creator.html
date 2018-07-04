@@ -118,7 +118,7 @@
 						type: String,
 						value: "Character Sheet Creator"
 					},
-					_races: Object,
+					_races: Array,
 					_spells: Object,
 					_subraces: Array,
 					_selectedRace: {
@@ -158,62 +158,6 @@
 					_all: {
 						type: Object,
 						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace, _selectedBackground)'
-					},
-					_selectedSkills: {
-						type: Array,
-						value: []
-					},
-					_staticSkills: {
-						type: Array,
-						value: [],
-						computed: '_collectionCombiner(_selectedRace.Skills, _selectedSubrace.Skills)'
-					},
-					_strengthSkills: {
-						type: Array,
-						value: [
-							"Athletics"
-						]
-					},
-					_dexteritySkills: {
-						type: Array,
-						value: [
-							"Acrobatics",
-							"Sleight of Hand",
-							"Stealth"
-						]
-					},
-					_constitutionSkills: {
-						type: Array,
-						value: []
-					},
-					_intelligenceSkills: {
-						type: Array,
-						value: [
-							"Arcana",
-							"History",
-							"Investigation",
-							"Nature",
-							"Religion"
-						]
-					},
-					_wisdomSkills: {
-						type: Array,
-						value: [
-							"Animal Handling",
-							"Insight",
-							"Medicine",
-							"Perception",
-							"Survival"
-						]
-					},
-					_charismaSkills: {
-						type: Array,
-						value: [
-							"Deception",
-							"Intimidation",
-							"Performance",
-							"Persuasion"
-						]
 					}
 				};
 			}
