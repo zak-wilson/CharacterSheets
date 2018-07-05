@@ -39,19 +39,14 @@
 					selectedValues: {
 						type: Array,
 						value: [],
-						//computed: '_getSelectedValues(_selectedItems)',
 						notify: true
 					},
 					_selectedItems: Array
 				};
 			}
 
-			// _getSelectedValues(selectedItems) {
-			// 	return (selectedItems || []).map((item) => item.name);
-			// }
-
 			_isGreater(left, right) {
-				return (left > right).toString();
+				return left > right;
 			}
 			_enoughItemsSelected(maxItems, selectedValues, item) {
 				return selectedValues.length >= maxItems && !selectedValues.includes(item);
