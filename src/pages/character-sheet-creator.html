@@ -2,8 +2,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-dropdown/paper-dropdown.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../components/card-wrapper.html">
@@ -53,37 +52,27 @@
 		<card-wrapper title="Basic Info" opened>
 			<div class="flexInline">
 				<paper-input required label="Name"></paper-input>
-				<paper-dropdown-menu label="Class" value="{{_selectedClassValue}}">
-					<paper-listbox slot="dropdown-content">
-						<template is="dom-repeat" items="{{_classes}}">
-							<paper-item>[[item]]</paper-item>
-						</template>
-					</paper-listbox>
-				</paper-dropdown-menu>
-				<template is="dom-if" if="[[_backgrounds]]" restamp>
-					<paper-dropdown-menu label="Background" value="{{_selectedBackgroundValue}}">
-						<paper-listbox slot="dropdown-content">
-							<template is="dom-repeat" items="{{_backgrounds}}">
-								<paper-item>[[item]]</paper-item>
-							</template>
-						</paper-listbox>
-					</paper-dropdown-menu>
-				</template>
-				<paper-dropdown-menu label="Race" value="{{_selectedRaceValue}}">
-					<paper-listbox slot="dropdown-content">
-						<template is="dom-repeat" items="{{_getObjectKeys(_races)}}">
-							<paper-item>[[item]]</paper-item>
-						</template>
-					</paper-listbox>
-				</paper-dropdown-menu>
+				<paper-dropdown label="Class" value="{{_selectedClassValue}}">
+					<template is="dom-repeat" items="{{_classes}}">
+						<paper-item>[[item]]</paper-item>
+					</template>
+				</paper-dropdown>
+				<paper-dropdown label="Background" value="{{_selectedBackgroundValue}}">
+					<template is="dom-repeat" items="{{_backgrounds}}">
+						<paper-item>[[item]]</paper-item>
+					</template>
+				</paper-dropdown>
+				<paper-dropdown label="Race" value="{{_selectedRaceValue}}">
+					<template is="dom-repeat" items="{{_getObjectKeys(_races)}}">
+						<paper-item>[[item]]</paper-item>
+					</template>
+				</paper-dropdown>
 				<template is="dom-if" if="[[_subraces]]" restamp>
-					<paper-dropdown-menu label="Subrace" value="{{_selectedSubraceValue}}">
-						<paper-listbox slot="dropdown-content">
-							<template is="dom-repeat" items="{{_subraces}}">
-								<paper-item>[[item]]</paper-item>
-							</template>
-						</paper-listbox>
-					</paper-dropdown-menu>
+					<paper-dropdown label="Subrace" value="{{_selectedSubraceValue}}">
+						<template is="dom-repeat" items="{{_subraces}}">
+							<paper-item>[[item]]</paper-item>
+						</template>
+					</paper-dropdown>
 				</template>
 			</div>
 		</card-wrapper>

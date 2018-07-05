@@ -1,22 +1,27 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-dropdown/paper-dropdown.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 <dom-module id="select-multi">
 	<template>
 		<style>
-			paper-listbox {
-				--paper-item-min-height: 0px;
+			paper-dropdown {
+				margin-left: 10px;
+			}
+
+			.flexInline {
+				display: flex;
+				align-items: center;
 			}
 		</style>
 
-		<div>
+		<div class="flexInline">
 			<label>Choose [[choose]]:</label>
-			<paper-listbox multi attr-for-selected="name" selected-items="{{_selectedItems}}">
+			<paper-dropdown value="{{selectedValues}}" multi$="[[_isGreater(choose, 1)]]" searchable$="[[_isGreater(selectedValues.length, 10)]]">
 				<template is="dom-repeat" items="[[options]]">
-					<paper-item disabled$="[[_enoughItemsSelected(choose, selectedValues, item)]]" name="[[item]]">[[item]]</paper-item>
+					<paper-item value$="[[item]]" disabled$="[[_enoughItemsSelected(choose, selectedValues, item)]]">[[item]]</paper-item>
 				</template>
-			</paper-listbox>
+			</paper-dropdown>
 		</div>
 
 	</template>
@@ -33,17 +38,21 @@
 					options: Array,
 					selectedValues: {
 						type: Array,
-						computed: '_getSelectedValues(_selectedItems)',
+						value: [],
+						//computed: '_getSelectedValues(_selectedItems)',
 						notify: true
 					},
 					_selectedItems: Array
 				};
 			}
 
-			_getSelectedValues(selectedItems) {
-				return (selectedItems || []).map((item) => item.name);
-			}
+			// _getSelectedValues(selectedItems) {
+			// 	return (selectedItems || []).map((item) => item.name);
+			// }
 
+			_isGreater(left, right) {
+				return (left > right).toString();
+			}
 			_enoughItemsSelected(maxItems, selectedValues, item) {
 				return selectedValues.length >= maxItems && !selectedValues.includes(item);
 			}

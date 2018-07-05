@@ -122,7 +122,7 @@
                 let mergedComponents = null;
                 if (spell.components.material && spell.components.material.length > 0) {
                     components.push("M");
-                    mergedComponents = spell.components.material.join(", ");
+                    mergedComponents = spell.components.material;
                 }
 
                 mergedComponents = `${components.join(", ")} (${mergedComponents})`;

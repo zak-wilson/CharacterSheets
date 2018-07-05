@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-dropdown/paper-dropdown.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
@@ -33,13 +32,11 @@
             </div>
         </template>
         <div>
-            <paper-dropdown-menu label="Spell">
-                <paper-listbox id="spellSelect" slot="dropdown-content" selected="{{_selectedSpellValue}}">
-                    <template is="dom-repeat" items="{{_getAvailableSpells(spells, _selectedSpells.*)}}">
-                        <paper-item value="[[item.name]]">[[item.displayName]]</paper-item>
-                    </template>
-                </paper-listbox>
-            </paper-dropdown-menu>
+            <paper-dropdown label="Spell" value="{{_selectedSpellValue}}" searchable="true">
+                <template is="dom-repeat" items="{{_getAvailableSpells(spells, _selectedSpells.*)}}">
+                    <paper-item value$="[[item.name]]">[[item.displayName]]</paper-item>
+                </template>
+            </paper-dropdown>
             <paper-icon-button icon="add" title="Add Spell to Character" on-tap="_addSpell"></paper-icon-button>
         </div>
         <div>
@@ -70,14 +67,14 @@
 
             _addSpell() {
                 let selectedSpell = this.spells[this._selectedSpellValue];
-                this.push('_selectedSpells', selectedSpell)
-                this.$.spellSelect.selected = -1;
+                this.push('_selectedSpells', selectedSpell);
+                this._selectedSpellValue = null;
             }
 
             _getAvailableSpells(spells, selectedSpells) {
-                let spellsToReview = spells || [];
+                let spellsToReview = Object.keys(spells || {});
                 let spellsSelected = selectedSpells.base || [];
-                let spellsToShow = spellsToReview.filter(value => -1 === spellsSelected.indexOf(value));
+                let spellsToShow = spellsToReview.filter(value => -1 === spellsSelected.map(spell => spell.name).indexOf(value)).map(value => (spells || {})[value]);
                 return spellsToShow;
             };
 
