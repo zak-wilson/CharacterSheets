@@ -47,6 +47,17 @@
 				flex-wrap: wrap;
 				justify-content: space-around;
 			}
+
+			.subcard {
+				--title-style: {
+					font-size: 18px;
+					margin: 8px 0 5px 0;
+				}
+				--sub-title-style: {
+					font-size: 12px;
+					margin: 5px 0 8px 0;
+				}
+			}
 		</style>
 
 		<card-wrapper title="Basic Info" opened>
@@ -87,6 +98,13 @@
 		<card-wrapper title="Spells">
 			<spells-control spells="[[_spells]]" spell-save-difficulty-class="[[_selectedClass.spellSaveDifficultyClass]]" spell-attack-modifier="[[_selectedClass.spellAttackModifier]]"></spells-control>
 		</card-wrapper>
+		<card-wrapper title="Traits">
+			<template is="dom-repeat" items="[[_all.traits]]">
+				<card-wrapper class="subcard" title="[[item]]">
+					<span>[[_getTraitDescription(_traits, item)]]</span>
+				</card-wrapper>
+			</template>
+		</card-wrapper>
 		<card-wrapper title="Items">
 			<paper-textarea></paper-textarea>
 		</card-wrapper>
@@ -107,8 +125,9 @@
 						type: String,
 						value: "Character Sheet Creator"
 					},
-					_races: Array,
 					_spells: Object,
+					_traits: Object,
+					_races: Array,
 					_subraces: Array,
 					_selectedRace: {
 						type: Object,
@@ -156,6 +175,7 @@
 				this._fileLoader('src/data/races.json', (data) => this._races = data);
 				this._fileLoader('src/data/classes.json', (data) => this._classes = data);
 				this._fileLoader('src/data/spells.json', (data) => this._spells = data);
+				this._fileLoader('src/data/traits.json', (data) => this._traits = data);
 				this._fileLoader('src/data/backgrounds.json', (data) => this._backgrounds = data);
 			}
 
@@ -233,6 +253,10 @@
 					speed: all.map((o) => o.speed || 0).reduce(this._sum),
 					traits: all.map((o) => o.traits || []).reduce(this._collectionCombiner, []),
 				};
+			}
+
+			_getTraitDescription(traits, trait) {
+				return traits[trait].description;
 			}
 
 			_sum(accumulator, value) {

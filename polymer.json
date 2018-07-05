@@ -2,8 +2,6 @@
   "entrypoint": "index.html",
   "shell": "src/pages/main-page.html",
   "fragments": [
-    "src/pages/character-sheet-creator.html",
-    "src/components/stat-component.html"
   ],
   "sources": [
     "images/**/*",

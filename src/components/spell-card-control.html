@@ -47,26 +47,44 @@
             .flex-outer>li>label+* {
                 flex: 1 0 220px;
             }
+            card-wrapper {
+                --title-style: {
+                    font-size: 18px;
+                    margin: 8px 0 5px 0;
+                }
+                --sub-title-style: {
+                    font-size: 12px;
+                    margin: 5px 0 8px 0;
+                }
+            }
         </style>
         <card-wrapper title="[[spell.displayName]]" sub-title="[[_calculateSubTitle(spell)]]">
             <div>
                 <ul class="flex-outer">
-                    <li>
-                        <label class="attributes" for="castingTime"> Casting Time: </label>
-                        <span id="castingTime">[[spell.castingTime]]</span>
-                    </li>
-                    <li>
-                        <label class="attributes" for="range"> Range: </label>
-                        <span id="range">[[_calculateRange(spell)]]</span>
-                    </li>
-                    <li>
-                        <label class="attributes" for="components"> Components: </label>
-                        <span id="components">[[_calculateComponents(spell)]]</span>
-                    </li>
-                    <li>
-                        <label class="attributes" for="duration"> Duration: </label>
-                        <span id="duration">[[spell.duration]]</span>
-                    </li>
+                    <template is="dom-if" if="[[spell.castingTime]]">
+                        <li>
+                            <label class="attributes" for="castingTime"> Casting Time: </label>
+                            <span id="castingTime">[[spell.castingTime]]</span>
+                        </li>
+                    </template>
+                    <template is="dom-if" if="[[_range]]">
+                        <li>
+                            <label class="attributes" for="range"> Range: </label>
+                            <span id="range">[[_range]]</span>
+                        </li>
+                    </template>
+                    <template is="dom-if" if="[[_components]]">
+                        <li>
+                            <label class="attributes" for="components"> Components: </label>
+                            <span id="components">[[_components]]</span>
+                        </li>
+                    </template>
+                    <template is="dom-if" if="[[spell.duration]]">
+                        <li>
+                            <label class="attributes" for="duration"> Duration: </label>
+                            <span id="duration">[[spell.duration]]</span>
+                        </li>
+                    </template>
                 </ul>
                 <span class="description">[[spell.description]]</span>
             </div>
@@ -84,7 +102,15 @@
 
             static get properties() {
                 return {
-                    spell: Object
+                    spell: Object,
+                    _range: {
+                        type: String,
+                        computed: '_calculateRange(spell)'
+                    },
+                    _components: {
+                        type: String,
+                        computed: '_calculateComponents(spell)'
+                    }
                 };
             }
 

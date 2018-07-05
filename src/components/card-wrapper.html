@@ -17,25 +17,28 @@
 				margin: 16px 0 5px 0;
 				color: #212121;
 				font-size: 22px;
-				cursor: pointer;
+				@apply --title-style
 			}
 
 			h4 {
 				margin: 5px 0 16px 0;
+				@apply --sub-title-style
 			}
 
 			.heading {
 				display: inline-flex;
+				width: 100%;
+				justify-content: space-between;
+				cursor: pointer;
 			}
 
 			.left {
 				display: flex;
-				flex: 50%;
+				flex-direction: column;
 			}
 
 			.right {
 				display: flex;
-				justify-content: space-between;
 				flex-direction: column;
 			}
 		</style>
@@ -44,7 +47,9 @@
 			<div class="heading" on-click="_toggleCollapse">
 				<div class="left">
 					<h1>[[title]]</h1>
-					<h4>[[subTitle]]</h4>
+					<template is="dom-if" if="[[subTitle]]">
+						<h4>[[subTitle]]</h4>
+					</template>
 				</div>
 				<div class="right">
 					<slot name="actionIcon"></slot>
