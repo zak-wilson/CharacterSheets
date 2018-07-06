@@ -49,13 +49,10 @@
 			}
 
 			.subcard {
+				word-wrap: break-word;
 				--title-style: {
 					font-size: 18px;
 					margin: 8px 0 5px 0;
-				}
-				--sub-title-style: {
-					font-size: 12px;
-					margin: 5px 0 8px 0;
 				}
 			}
 
@@ -106,11 +103,9 @@
 		<card-wrapper title="Traits">
 			<template is="dom-repeat" items="[[_all.traits]]">
 				<card-wrapper class="subcard" title="[[item]]">
-					<span>
-						<template is="dom-repeat" items="[[_getTraitDescription(_traits, item)]]" as="desc">
-							<p>[[desc]]</p>
-						</template>
-					</span>
+					<template is="dom-repeat" items="[[_getTraitDescription(_traits, item)]]" as="desc">
+						<p>[[desc]]</p>
+					</template>
 				</card-wrapper>
 			</template>
 		</card-wrapper>

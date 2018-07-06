@@ -49,7 +49,7 @@
 				return left > right;
 			}
 			_enoughItemsSelected(maxItems, selectedValues, item) {
-				return selectedValues.length >= maxItems && !selectedValues.includes(item);
+				return (selectedValues || []).length >= maxItems && !(selectedValues || []).includes(item);
 			}
 		}
 
