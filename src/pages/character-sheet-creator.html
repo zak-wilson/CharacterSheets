@@ -58,6 +58,11 @@
 					margin: 5px 0 8px 0;
 				}
 			}
+
+			.money {
+				width: 35px;
+				text-align: center;
+			}
 		</style>
 
 		<card-wrapper title="Basic Info" opened>
@@ -113,6 +118,13 @@
 			<paper-textarea></paper-textarea>
 		</card-wrapper>
 		<card-wrapper title="Equipment">
+			<div class="flexInline">
+				<paper-input class="money" label="CP"></paper-input>
+				<paper-input class="money" label="SP"></paper-input>
+				<paper-input class="money" label="EP"></paper-input>
+				<paper-input class="money" label="GP"></paper-input>
+				<paper-input class="money" label="PP"></paper-input>
+			</div>
 			<paper-textarea value="[[_all.equipment]]"></paper-textarea>
 		</card-wrapper>
 		<card-wrapper title="Other">
