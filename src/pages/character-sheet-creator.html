@@ -101,7 +101,12 @@
 		<card-wrapper title="Traits">
 			<template is="dom-repeat" items="[[_all.traits]]">
 				<card-wrapper class="subcard" title="[[item]]">
-					<span>[[_getTraitDescription(_traits, item)]]</span>
+					<span>
+						<template is="dom-repeat" items="[[_getTraitDescription(_traits, item)]]" as="desc">
+							[[desc]]
+							<br/>
+						</template>
+					</span>
 				</card-wrapper>
 			</template>
 		</card-wrapper>
@@ -256,7 +261,7 @@
 			}
 
 			_getTraitDescription(traits, trait) {
-				return traits[trait].description;
+				return traits[trait].description.split('\n');
 			}
 
 			_sum(accumulator, value) {
