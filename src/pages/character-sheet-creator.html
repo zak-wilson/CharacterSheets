@@ -18,30 +18,6 @@
 				display: block;
 			}
 
-			.strength {
-				--main-stat-colour: red;
-			}
-
-			.dexterity {
-				--main-stat-colour: green;
-			}
-
-			.constitution {
-				--main-stat-colour: orange;
-			}
-
-			.intelligence {
-				--main-stat-colour: blue;
-			}
-
-			.wisdom {
-				--main-stat-colour: yellow;
-			}
-
-			.charisma {
-				--main-stat-colour: purple;
-			}
-
 			.flexInline {
 				display: flex;
 				flex-wrap: wrap;
@@ -237,7 +213,7 @@
 				var sr = selectedRace || {};
 				var ssr = selectedSubrace || {};
 				var sb = selectedBackground || {};
-				var all = [sc, sr, ssr, sb];
+				var all = [sc, sr, ssr, sb].concat((sc.levels || []).slice(0,2));
 				return {
 					abilityScoreBonus: all.map((o) => o.abilityScoreBonus || {}).reduce((acc, val) => {
 						return {
