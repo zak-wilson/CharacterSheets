@@ -34,7 +34,7 @@
         <div>
             <paper-dropdown label="Spell" value="{{_selectedSpellValue}}" searchable="true">
                 <template is="dom-repeat" items="{{_getAvailableSpells(spells, _selectedSpells.*)}}">
-                    <paper-item value$="[[item.name]]">[[item.displayName]]</paper-item>
+                    <paper-item value$="[[item]]">[[item.displayName]]</paper-item>
                 </template>
             </paper-dropdown>
             <paper-icon-button icon="add" title="Add Spell to Character" on-tap="_addSpell"></paper-icon-button>
@@ -57,7 +57,7 @@
                     spells: Object,
                     spellSaveDifficultyClass: String,
                     spellAttackModifier: String,
-                    _selectedSpellValue: Number,
+                    _selectedSpellValue: Object,
                     _selectedSpells: {
                         type: Array,
                         value: []
@@ -66,8 +66,7 @@
             }
 
             _addSpell() {
-                let selectedSpell = this.spells[this._selectedSpellValue];
-                this.push('_selectedSpells', selectedSpell);
+                this.push('_selectedSpells', JSON.parse(this._selectedSpellValue));
                 this._selectedSpellValue = null;
             }
 
