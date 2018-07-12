@@ -79,7 +79,8 @@
             };
 
             _removeSpellCard(event) {
-                this.pop('_selectedSpells', event.detail.spell);
+                var index = this._selectedSpells.indexOf(event.detail.spell);
+                this.splice('_selectedSpells', index, 1);
             }
         }
 
