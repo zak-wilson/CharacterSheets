@@ -172,6 +172,10 @@
                         value: [],
                         computed: '_getAllSkills(skillOptions, _selectedSkills)'
                     },
+                    _abilityScoreBonus: {
+                        type: Object,
+                        computed: '_getAbilityScoreBonuses(abilityScoreBonus, _selectedAbilityScores)'
+                    },
                     _selectedAbilityScores: {
                         type: Array,
                         value: []
@@ -267,18 +271,36 @@
             }
 
             _abilityScoreBonusChoicesUpdated(e) {
-                var added = this._collectionDiff(e.detail.value, this._selectedAbilityScores[e.target.dataset.id] || []);
-                var removed = this._collectionDiff(this._selectedAbilityScores[e.target.dataset.id] || [], e.detail.value);
+                var value = [].concat(e.detail.value);
+                // var added = this._collectionDiff(value, this._selectedAbilityScores[e.target.dataset.id] || []);
+                // var removed = this._collectionDiff(this._selectedAbilityScores[e.target.dataset.id] || [], value);
 
-                added.forEach(value => {
-                    this.abilityScoreBonus[value] += Number(e.target.dataset.value);
-                });
-                removed.forEach(value => {
-                    this.abilityScoreBonus[value] -= Number(e.target.dataset.value);
-                });
-                this.abilityScoreBonus = JSON.parse(JSON.stringify(this.abilityScoreBonus));
+                // added.forEach(value => {
+                //     this.abilityScoreBonus[value] += Number(e.target.dataset.value);
+                // });
+                // removed.forEach(value => {
+                //     this.abilityScoreBonus[value] -= Number(e.target.dataset.value);
+                // });
+                // this.abilityScoreBonus = JSON.parse(JSON.stringify(this.abilityScoreBonus));
 
-                this._selectedAbilityScores[e.target.dataset.id] = e.detail.value;
+                this._selectedAbilityScores[e.target.dataset.id] = {
+                    value: Number(e.target.dataset.value),
+                    abilities: JSON.parse(JSON.stringify(value))
+                };
+            }
+
+            _getAbilityScoreBonuses(abilityScoreBonus, selectedAbilityScores) {
+                var asb = JSON.parse(JSON.stringify(this.abilityScoreBonus));
+                // var value = [].concat(e.detail.value);
+                // var added = this._collectionDiff(value, this._selectedAbilityScores[e.target.dataset.id] || []);
+                // var removed = this._collectionDiff(this._selectedAbilityScores[e.target.dataset.id] || [], value);
+
+                (selectedAbilityScores || []).forEach(selected => {
+                    (selected.abilities || []).forEach(ability => {
+                        asb[ability] += Number(selected.value);
+                    });
+                });
+                return asb;
             }
 
             _collectionDiff(c1, c2) {
