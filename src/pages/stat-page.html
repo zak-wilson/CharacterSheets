@@ -122,21 +122,21 @@
             <div class="flexInline">
                 <stat-control class="strength" stat="Strength" modifier="{{_strengthModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                     selected-skills="[[_allSkills]]" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Strength')]]"
-                    bonus="[[abilityScoreBonus.strength]]"></stat-control>
+                    bonus="[[_abilityScoreBonus.strength]]"></stat-control>
                 <stat-control class="dexterity" stat="Dexterity" modifier="{{_dexterityModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                     selected-skills="[[_allSkills]]" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Dexterity')]]"
-                    bonus="[[abilityScoreBonus.dexterity]]"></stat-control>
+                    bonus="[[_abilityScoreBonus.dexterity]]"></stat-control>
                 <stat-control class="constitution" stat="Constitution" modifier="{{_constitutionModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                     selected-skills="[[_allSkills]]" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Constitution')]]"
-                    bonus="[[abilityScoreBonus.constitution]]"></stat-control>
+                    bonus="[[_abilityScoreBonus.constitution]]"></stat-control>
                 <stat-control class="intelligence" stat="Intelligence" modifier="{{_intelligenceModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                     selected-skills="[[_allSkills]]" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Intelligence')]]"
-                    bonus="[[abilityScoreBonus.intelligence]]"></stat-control>
+                    bonus="[[_abilityScoreBonus.intelligence]]"></stat-control>
                 <stat-control class="wisdom" stat="Wisdom" modifier="{{_wisdomModifier}}" proficiency-bonus="[[proficiencyBonus]]" selected-skills="[[_allSkills]]"
-                    skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]" bonus="[[abilityScoreBonus.wisdom]]"></stat-control>
+                    skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]" bonus="[[_abilityScoreBonus.wisdom]]"></stat-control>
                 <stat-control class="charisma" stat="Charisma" modifier="{{_charismaModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                     selected-skills="[[_allSkills]]" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Charisma')]]"
-                    bonus="[[abilityScoreBonus.charisma]]"></stat-control>
+                    bonus="[[_abilityScoreBonus.charisma]]"></stat-control>
             </div>
         </card-wrapper>
     </template>
@@ -272,28 +272,16 @@
 
             _abilityScoreBonusChoicesUpdated(e) {
                 var value = [].concat(e.detail.value);
-                // var added = this._collectionDiff(value, this._selectedAbilityScores[e.target.dataset.id] || []);
-                // var removed = this._collectionDiff(this._selectedAbilityScores[e.target.dataset.id] || [], value);
-
-                // added.forEach(value => {
-                //     this.abilityScoreBonus[value] += Number(e.target.dataset.value);
-                // });
-                // removed.forEach(value => {
-                //     this.abilityScoreBonus[value] -= Number(e.target.dataset.value);
-                // });
-                // this.abilityScoreBonus = JSON.parse(JSON.stringify(this.abilityScoreBonus));
 
                 this._selectedAbilityScores[e.target.dataset.id] = {
                     value: Number(e.target.dataset.value),
                     abilities: JSON.parse(JSON.stringify(value))
                 };
+                this._selectedAbilityScores = JSON.parse(JSON.stringify(this._selectedAbilityScores));
             }
 
             _getAbilityScoreBonuses(abilityScoreBonus, selectedAbilityScores) {
                 var asb = JSON.parse(JSON.stringify(this.abilityScoreBonus));
-                // var value = [].concat(e.detail.value);
-                // var added = this._collectionDiff(value, this._selectedAbilityScores[e.target.dataset.id] || []);
-                // var removed = this._collectionDiff(this._selectedAbilityScores[e.target.dataset.id] || [], value);
 
                 (selectedAbilityScores || []).forEach(selected => {
                     (selected.abilities || []).forEach(ability => {
