@@ -63,7 +63,9 @@
 						</template>
 					</paper-dropdown>
 					<paper-input class="smallText marginLeft inputLookNotDisabled" disabled label="Level" value="{{_level}}"></paper-input>
-					<paper-icon-button icon="arrow-upward" on-tap="_levelUp"></paper-icon-button>
+					<template is="dom-if" if="[[_canLevelUp(_level)]]">
+						<paper-icon-button icon="arrow-upward" on-tap="_levelUp"></paper-icon-button>
+					</template>
 				</div>
 				<paper-dropdown label="Background" value="{{_selectedBackgroundValue}}">
 					<template is="dom-repeat" items="{{_backgrounds}}">
@@ -245,6 +247,9 @@
 
 			_levelUp() {
 				this._level = Number(this._level) + 1;
+			}
+			_canLevelUp(level) {
+				return level < 20;
 			}
 
 			_getAll(selectedClass, selectedRace, selectedSubrace, selectedBackground, level) {
