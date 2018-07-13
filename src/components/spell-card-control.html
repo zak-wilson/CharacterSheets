@@ -115,43 +115,36 @@
             }
 
             _calculateSubTitle(spell) {
-                let subTitle = "";
-
-                if (spell.restrictions.level) {
-                    subTitle += `${spell.restrictions.level}-level`;
-                }
+                let subTitle = spell.restrictions.level ? `${spell.restrictions.level}-level` : 'Cantrip';
 
                 if (spell.restrictions.school) {
-                    if (subTitle) {
-                        subTitle += ' ';
-                    }
-                    subTitle += `${spell.restrictions.school}`;
+                    subTitle += ` ${spell.restrictions.school}`;
                 }
 
                 return subTitle;
             }
 
             _calculateRange(spell) {
-                return spell.target === "self" ? `Self (${spell.range})` : spell.range;
+                return spell.target === 'self' ? `Self (${spell.range})` : spell.range;
             }
 
             _calculateComponents(spell) {
                 let components = [];
                 if (spell.components.verbal) {
-                    components.push("V");
+                    components.push('V');
                 }
 
                 if (spell.components.somatic) {
-                    components.push("S");
+                    components.push('S');
                 }
 
                 let mergedComponents = null;
                 if (spell.components.material && spell.components.material.length > 0) {
-                    components.push("M");
-                    mergedComponents = spell.components.material;
+                    let materials = spell.components.material && ` (${spell.components.material})` || '';
+                    components.push(`M${materials}`);
                 }
 
-                mergedComponents = `${components.join(", ")} (${mergedComponents})`;
+                mergedComponents = components.join(', ');
                 return mergedComponents;
             }
 

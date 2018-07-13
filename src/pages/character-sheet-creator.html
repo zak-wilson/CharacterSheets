@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-dropdown/paper-dropdown.html">
@@ -7,8 +7,7 @@
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../components/card-wrapper.html">
 <link rel="import" href="../components/proficiency-control.html">
-<link rel="import" href="../components/stat-control.html">
-<link rel="import" href="../components/spells-control.html">
+<link rel="import" href="./spells-page.html">
 <link rel="import" href="./stat-page.html">
 
 <dom-module id="character-sheet-creator">
@@ -24,6 +23,12 @@
 				justify-content: space-around;
 			}
 
+			.flexSpaceBetween {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
 			.subcard {
 				word-wrap: break-word;
 				--title-style: {
@@ -32,20 +37,36 @@
 				}
 			}
 
-			.money {
+			.smallText {
 				width: 35px;
 				text-align: center;
+			}
+
+			.marginLeft {
+				margin-left: 15px;
+			}
+
+			.inputLookNotDisabled {
+				--paper-input-container-disabled: {
+					opacity: 1;
+				}
 			}
 		</style>
 
 		<card-wrapper title="Basic Info" opened>
 			<div class="flexInline">
-				<paper-input required label="Name"></paper-input>
-				<paper-dropdown label="Class" value="{{_selectedClassValue}}">
-					<template is="dom-repeat" items="{{_classes}}">
-						<paper-item>[[item]]</paper-item>
+				<paper-input label="Name" value="{{_name}}"></paper-input>
+				<div class="flexSpaceBetween">
+					<paper-dropdown label="Class" value="{{_selectedClassValue}}">
+						<template is="dom-repeat" items="{{_classes}}">
+							<paper-item>[[item]]</paper-item>
+						</template>
+					</paper-dropdown>
+					<paper-input class="smallText marginLeft inputLookNotDisabled" disabled label="Level" value="{{_level}}"></paper-input>
+					<template is="dom-if" if="[[_canLevelUp(_level)]]">
+						<paper-icon-button icon="arrow-upward" on-tap="_levelUp"></paper-icon-button>
 					</template>
-				</paper-dropdown>
+				</div>
 				<paper-dropdown label="Background" value="{{_selectedBackgroundValue}}">
 					<template is="dom-repeat" items="{{_backgrounds}}">
 						<paper-item>[[item]]</paper-item>
@@ -65,8 +86,10 @@
 				</template>
 			</div>
 		</card-wrapper>
-		<stat-page skill-options="[[_all.skills]]" ability-score-bonus="[[_all.abilityScoreBonus]]" proficiency-bonus="[[_all.proficiencyBonus]]"
-		 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]"></stat-page>
+		<card-wrapper title="Stats">
+			<stat-page skill-options="[[_all.skills]]" ability-score-bonus="[[_all.abilityScoreBonus]]" proficiency-bonus="[[_all.proficiencyBonus]]"
+			 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]"></stat-page>
+		</card-wrapper>
 		<card-wrapper title="Proficiencies">
 			<proficiency-control type="Weapon" options="[[_all.proficiencies.weapon]]"></proficiency-control>
 			<proficiency-control type="Armour" options="[[_all.proficiencies.armour]]"></proficiency-control>
@@ -74,7 +97,9 @@
 			<proficiency-control type="Language" options="[[_all.proficiencies.language]]"></proficiency-control>
 		</card-wrapper>
 		<card-wrapper title="Spells">
-			<spells-control spells="[[_spells]]" spell-save-difficulty-class="[[_selectedClass.spellSaveDifficultyClass]]" spell-attack-modifier="[[_selectedClass.spellAttackModifier]]"></spells-control>
+			<spells-page spells="[[_spells]]" class-name="[[_selectedClass.name]]" spell-save-difficulty-class="[[_all.spellSaveDifficultyClass]]"
+			 spell-attack-modifier="[[_all.spellAttackModifier]]" spell-slots="[[_all.spellSlots]]" spells-known="[[_all.spellsKnown]]"
+			 cantrips-known="[[_all.cantripsKnown]]"></spells-control>
 		</card-wrapper>
 		<card-wrapper title="Traits">
 			<template is="dom-repeat" items="[[_all.traits]]">
@@ -90,11 +115,11 @@
 		</card-wrapper>
 		<card-wrapper title="Equipment">
 			<div class="flexInline">
-				<paper-input class="money" label="CP"></paper-input>
-				<paper-input class="money" label="SP"></paper-input>
-				<paper-input class="money" label="EP"></paper-input>
-				<paper-input class="money" label="GP"></paper-input>
-				<paper-input class="money" label="PP"></paper-input>
+				<paper-input class="smallText" label="CP"></paper-input>
+				<paper-input class="smallText" label="SP"></paper-input>
+				<paper-input class="smallText" label="EP"></paper-input>
+				<paper-input class="smallText" label="GP"></paper-input>
+				<paper-input class="smallText" label="PP"></paper-input>
 			</div>
 			<paper-textarea value="[[_all.equipment]]"></paper-textarea>
 		</card-wrapper>
@@ -119,6 +144,11 @@
 					_traits: Object,
 					_races: Array,
 					_subraces: Array,
+					_name: String,
+					_level: {
+						type: Number,
+						value: 1
+					},
 					_selectedRace: {
 						type: Object,
 						value: () => { return {}; }
@@ -155,7 +185,7 @@
 					},
 					_all: {
 						type: Object,
-						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace, _selectedBackground)'
+						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace, _selectedBackground, _level)'
 					}
 				};
 			}
@@ -193,7 +223,10 @@
 					return;
 				}
 
-				this._fileLoader('src/data/classes/' + selectedClass + '.json', (data) => this._selectedClass = data);
+				this._fileLoader('src/data/classes/' + selectedClass + '.json', (data) => {
+					data.name = selectedClass;
+					this._selectedClass = data
+				});
 			}
 			_selectedBackgroundChanged(selectedBackground) {
 				if (!selectedBackground) {
@@ -208,12 +241,23 @@
 				return race || 0 + subrace || 0 + selectedClass || 0;
 			}
 
-			_getAll(selectedClass, selectedRace, selectedSubrace, selectedBackground) {
+			_getTraitDescription(traits, trait) {
+				return (traits[trait] || { description: trait }).description.split('\n');
+			}
+
+			_levelUp() {
+				this._level = Number(this._level) + 1;
+			}
+			_canLevelUp(level) {
+				return level < 20;
+			}
+
+			_getAll(selectedClass, selectedRace, selectedSubrace, selectedBackground, level) {
 				var sc = selectedClass || {};
 				var sr = selectedRace || {};
 				var ssr = selectedSubrace || {};
 				var sb = selectedBackground || {};
-				var all = [sc, sr, ssr, sb].concat((sc.levels || []).slice(0,2));
+				var all = [sc, sr, ssr, sb].concat((sc.levels || []).slice(0, Number(level) || 1));
 				return {
 					abilityScoreBonus: all.map((o) => o.abilityScoreBonus || {}).reduce((acc, val) => {
 						return {
@@ -226,9 +270,10 @@
 							options: acc.options.concat(val.options || [])
 						}
 					}, { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0, options: [] }),
+					cantripsKnown: all.map((o) => o.cantripsKnown || 0).reduce(this._sum, 0),
 					equipment: all.map((o) => o.equipment || []).reduce(this._collectionCombiner, []).join('\n'),
 					hitDice: sc.hitDice || '',
-					hitPoints: all.map((o) => o.hitPoints || 0).reduce(this._sum),
+					hitPoints: all.map((o) => o.hitPoints || 0).reduce(this._sum, 0),
 					proficiencies: all.map((o) => o.proficiencies || {}).reduce((acc, val) => {
 						return {
 							weapon: acc.weapon.concat(val.weapon || []),
@@ -237,16 +282,21 @@
 							language: acc.language.concat(val.language || [])
 						}
 					}, { weapon: [], armour: [], tool: [], language: [] }),
-					proficiencyBonus: all.map((o) => o.proficiencyBonus || 0).reduce(this._sum),
+					proficiencyBonus: all.map((o) => o.proficiencyBonus || 0).reduce(this._sum, 0),
 					savingThrows: all.map((o) => o.savingThrows || []).reduce(this._collectionCombiner, []),
 					skills: all.map((o) => o.skills || []).reduce(this._collectionCombiner, []),
-					speed: all.map((o) => o.speed || 0).reduce(this._sum),
+					speed: all.map((o) => o.speed || 0).reduce(this._sum, 0),
+					spellAttackModifier: sc.spellAttackModifier,
+					spellSaveDifficultyClass: sc.spellSaveDifficultyClass,
+					spellsKnown: all.map((o) => o.spellsKnown || 0).reduce(this._sum, 0),
+					spellSlots: all.map((o) => o.spellSlots || []).reduce((acc, val) => {
+						val.forEach((o, index) => {
+							acc[index] = (acc[index] || 0) + o;
+						});
+						return acc;
+					}, []),
 					traits: all.map((o) => o.traits || []).reduce(this._collectionCombiner, []),
 				};
-			}
-
-			_getTraitDescription(traits, trait) {
-				return traits[trait].description.split('\n');
 			}
 
 			_sum(accumulator, value) {
