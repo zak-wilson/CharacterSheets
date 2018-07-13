@@ -1,0 +1,209 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dropdown/paper-dropdown.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../components/card-wrapper.html">
+<link rel="import" href="../components/spell-card-control.html">
+
+<dom-module id="spells-page">
+	<template>
+		<style>
+			.flexColumn {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				margin: 8px;
+				--paper-font-caption: {
+					line-height: 0;
+				}
+			}
+
+			.flex {
+				display: flex;
+				align-items: center;
+			}
+
+			.flex>paper-checkbox {
+				margin-left: 8px;
+			}
+
+			.subcard {
+				--title-style: {
+					font-size: 18px;
+					margin: 8px 0 5px 0;
+				}
+			}
+		</style>
+		<template is="dom-if" if="[[spellSaveDifficultyClass]]">
+			<div>
+				<label>Spell Save DC:</label>
+				<span>[[spellSaveDifficultyClass]]</span>
+			</div>
+		</template>
+		<template is="dom-if" if="[[spellAttackModifier]]">
+			<div>
+				<label>Spell Attack Modifier:</label>
+				<span>[[spellAttackModifier]]</span>
+			</div>
+		</template>
+		<template is="dom-if" if="[[cantripsKnown]]">
+			<div>
+				<label>Number of Known Cantrips:</label>
+				<span>[[cantripsKnown]]</span>
+			</div>
+		</template>
+		<template is="dom-if" if="[[spellsKnown]]">
+			<div>
+				<label>Number of Known Spells:</label>
+				<span>[[spellsKnown]]</span>
+			</div>
+		</template>
+		<div>
+			<paper-dropdown disabled$="[[!_canAddMore]]" label="Spell" value="{{_selectedSpellValue}}" searchable="true">
+				<template is="dom-repeat" items="[[_getAvailableSpells(spells, _selectedSpells, _canAddMoreCantrips, _canAddMoreSpells, spellSlots, _filterByClass, className)]]">
+					<paper-item value$="[[item]]">[[item.displayName]]</paper-item>
+				</template>
+			</paper-dropdown>
+			<paper-icon-button disabled$="[[!_canAddMore]]" icon="add" title="Add Spell to Character" on-tap="_addSpell"></paper-icon-button>
+			<paper-checkbox checked="{{_filterByClass}}">Filter By Class</paper-checkbox>
+		</div>
+
+		<template is="dom-repeat" items="[[_spellSlots]]">
+			<card-wrapper class="subcard" title="[[_getSpellLevelName(index)]]">
+				<template is="dom-if" if="[[item]]">
+					<div class="flex">
+						Slots Available:
+						<template is="dom-repeat" items="[[_getArrayOfLength(item)]]">
+							<paper-checkbox checked="true"></paper-checkbox>
+						</template>
+					</div>
+				</template>
+				<template is="dom-repeat" items="[[_getSpellsAtLevel(_selectedSpells, index)]]" as="spell">
+					<spell-card-control spell="[[spell]]" on-remove-spell-card="_removeSpellCard"></spell-card-control>
+				</template>
+			</card-wrapper>
+		</template>
+	</template>
+
+	<script>
+		Polymer.setPassiveTouchGestures(true);
+
+		class SpellsPage extends Polymer.Element {
+			static get is() { return 'spells-page'; }
+
+			static get properties() {
+				return {
+					spells: Object,
+					className: {
+						type: String,
+						observer: '_resetSpells'
+					},
+					spellSaveDifficultyClass: String,
+					spellAttackModifier: String,
+					spellSlots: Array,
+					spellsKnown: Number,
+					cantripsKnown: Number,
+					_spellSlots: {
+						type: Boolean,
+						computed: '_getSpellSlots(spellSlots, cantripsKnown)'
+					},
+					_canAddMore: {
+						type: Boolean,
+						computed: '_getCanAddMore(_canAddMoreCantrips, _canAddMoreSpells)'
+					},
+					_canAddMoreCantrips: {
+						type: Boolean,
+						computed: '_getCanAddMoreCantrips(cantripsKnown, _selectedSpells)'
+					},
+					_canAddMoreSpells: {
+						type: Boolean,
+						computed: '_getCanAddMoreSpells(spellsKnown, _selectedSpells)'
+					},
+					_filterByClass: {
+						type: Boolean,
+						value: true
+					},
+					_selectedSpellValue: Object,
+					_selectedSpells: {
+						type: Array,
+						value: []
+					}
+				};
+			}
+
+			_resetSpells() {
+				this._selectedSpells = [];
+			}
+
+			_addSpell() {
+				if (!this._selectedSpellValue) return;
+
+				this._selectedSpells = this._selectedSpells
+					.concat(JSON.parse(this._selectedSpellValue));
+				this._selectedSpellValue = null;
+			}
+
+			_getAvailableSpells(spells, selectedSpells, canAddMoreCantrips, canAddMoreSpells, spellSlots, filterByClass, className) {
+				let spellsToReview = Object.keys(spells || {}).map((spell) => spells[spell]);
+				let spellsSelected = (selectedSpells || []).map(spell => spell.name);
+
+				let spellsToShow = spellsToReview.filter(spell => (canAddMoreCantrips && !spell.restrictions.level) || (canAddMoreSpells && spell.restrictions.level && spellSlots[Number(spell.restrictions.level[0])]));
+				spellsToShow = spellsToShow.filter(spell => !filterByClass || (spell.restrictions.classes || []).includes(className));
+				spellsToShow = spellsToShow.filter(spell => !spellsSelected.includes(spell.name));
+				spellsToShow = spellsToShow.sort(this._sortSpells);
+
+				return spellsToShow;
+			}
+
+			_getSpellSlots(spellSlots, cantripsKnown) {
+				if (!cantripsKnown) return [];
+				spellSlots.splice(0, 0, 0);
+				return spellSlots;
+			}
+			_getSpellsAtLevel(spells, level) {
+				return spells.filter(spell => Number((spell.restrictions.level || '0')[0]) === level);
+			}
+			_getSpellLevelName(level) {
+				if (!level) return 'Cantrips';
+				var s = ["th", "st", "nd", "rd"],
+					v = level % 100;
+				return level + (s[(v - 20) % 10] || s[v] || s[0]) + '-level';
+			}
+
+			_getCanAddMore(canAddMoreCantrips, canAddMoreSpells) {
+				return canAddMoreCantrips || canAddMoreSpells;
+			}
+			_getCanAddMoreCantrips(cantripsKnown, selectedSpells) {
+				let cantrips = selectedSpells.filter(spell => !spell.restrictions.level);
+				return cantripsKnown > cantrips.length;
+			}
+			_getCanAddMoreSpells(spellsKnown, selectedSpells) {
+				let spells = selectedSpells.filter(spell => spell.restrictions.level);
+				return spellsKnown > spells.length;
+			}
+
+			_sortSpells(a, b) {
+				if ((a.restrictions.level || '0') > (b.restrictions.level || '0')) return 1;
+				if ((a.restrictions.level || '0') < (b.restrictions.level || '0')) return -1;
+
+				if (a.displayName > b.displayName) return 1;
+				if (a.displayName < b.displayName) return -1;
+			}
+
+			_removeSpellCard(event) {
+				var index = this._selectedSpells.indexOf(event.detail.spell);
+				this._selectedSpells.splice(index, 1);
+				this._selectedSpells = JSON.parse(JSON.stringify(this._selectedSpells));
+			}
+
+			_getArrayOfLength(count) {
+				return Array(count);
+			}
+		}
+
+		window.customElements.define(SpellsPage.is, SpellsPage);
+	</script>
+</dom-module>

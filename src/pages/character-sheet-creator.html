@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-dropdown/paper-dropdown.html">
@@ -7,8 +7,7 @@
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../components/card-wrapper.html">
 <link rel="import" href="../components/proficiency-control.html">
-<link rel="import" href="../components/stat-control.html">
-<link rel="import" href="../components/spells-control.html">
+<link rel="import" href="./spells-page.html">
 <link rel="import" href="./stat-page.html">
 
 <dom-module id="character-sheet-creator">
@@ -46,6 +45,12 @@
 			.marginLeft {
 				margin-left: 15px;
 			}
+
+			.inputLookNotDisabled {
+				--paper-input-container-disabled: {
+					opacity: 1;
+				}
+			}
 		</style>
 
 		<card-wrapper title="Basic Info" opened>
@@ -57,7 +62,8 @@
 							<paper-item>[[item]]</paper-item>
 						</template>
 					</paper-dropdown>
-					<paper-input class="smallText marginLeft" label="Level" value="{{_level}}"></paper-input>
+					<paper-input class="smallText marginLeft inputLookNotDisabled" disabled label="Level" value="{{_level}}"></paper-input>
+					<paper-icon-button icon="arrow-upward" on-tap="_levelUp"></paper-icon-button>
 				</div>
 				<paper-dropdown label="Background" value="{{_selectedBackgroundValue}}">
 					<template is="dom-repeat" items="{{_backgrounds}}">
@@ -78,8 +84,10 @@
 				</template>
 			</div>
 		</card-wrapper>
-		<stat-page skill-options="[[_all.skills]]" ability-score-bonus="[[_all.abilityScoreBonus]]" proficiency-bonus="[[_all.proficiencyBonus]]"
-		 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]"></stat-page>
+		<card-wrapper title="Stats">
+			<stat-page skill-options="[[_all.skills]]" ability-score-bonus="[[_all.abilityScoreBonus]]" proficiency-bonus="[[_all.proficiencyBonus]]"
+			 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]"></stat-page>
+		</card-wrapper>
 		<card-wrapper title="Proficiencies">
 			<proficiency-control type="Weapon" options="[[_all.proficiencies.weapon]]"></proficiency-control>
 			<proficiency-control type="Armour" options="[[_all.proficiencies.armour]]"></proficiency-control>
@@ -87,8 +95,9 @@
 			<proficiency-control type="Language" options="[[_all.proficiencies.language]]"></proficiency-control>
 		</card-wrapper>
 		<card-wrapper title="Spells">
-			<spells-control spells="[[_spells]]" class-name="[[_selectedClass.name]]" spell-save-difficulty-class="[[_all.spellSaveDifficultyClass]]"
-			 spell-attack-modifier="[[_all.spellAttackModifier]]"></spells-control>
+			<spells-page spells="[[_spells]]" class-name="[[_selectedClass.name]]" spell-save-difficulty-class="[[_all.spellSaveDifficultyClass]]"
+			 spell-attack-modifier="[[_all.spellAttackModifier]]" spell-slots="[[_all.spellSlots]]" spells-known="[[_all.spellsKnown]]"
+			 cantrips-known="[[_all.cantripsKnown]]"></spells-control>
 		</card-wrapper>
 		<card-wrapper title="Traits">
 			<template is="dom-repeat" items="[[_all.traits]]">
@@ -230,6 +239,14 @@
 				return race || 0 + subrace || 0 + selectedClass || 0;
 			}
 
+			_getTraitDescription(traits, trait) {
+				return (traits[trait] || { description: trait }).description.split('\n');
+			}
+
+			_levelUp() {
+				this._level = Number(this._level) + 1;
+			}
+
 			_getAll(selectedClass, selectedRace, selectedSubrace, selectedBackground, level) {
 				var sc = selectedClass || {};
 				var sr = selectedRace || {};
@@ -267,13 +284,14 @@
 					spellAttackModifier: sc.spellAttackModifier,
 					spellSaveDifficultyClass: sc.spellSaveDifficultyClass,
 					spellsKnown: all.map((o) => o.spellsKnown || 0).reduce(this._sum, 0),
-					spellSlots: all.map((o) => (o.spellSlots || []).map(slot => slot || 0).reduce(this._sum, 0)),
+					spellSlots: all.map((o) => o.spellSlots || []).reduce((acc, val) => {
+						val.forEach((o, index) => {
+							acc[index] = (acc[index] || 0) + o;
+						});
+						return acc;
+					}, []),
 					traits: all.map((o) => o.traits || []).reduce(this._collectionCombiner, []),
 				};
-			}
-
-			_getTraitDescription(traits, trait) {
-				return (traits[trait] || { description: trait }).description.split('\n');
 			}
 
 			_sum(accumulator, value) {

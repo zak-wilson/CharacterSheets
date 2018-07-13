@@ -1,6 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../components/card-wrapper.html">
 <link rel="import" href="../components/stat-control.html">
 <link rel="import" href="../components/select-multi.html">
 
@@ -67,78 +66,76 @@
             }
         </style>
 
-        <card-wrapper title="Stats">
-            <div class="flexInline">
-                <div class="flex">
-                    <div class="flexColumn">
-                        <label>Hit Points</label>
-                        <paper-input class="visibleDisabled" value="[[_getHitPoints(hitDice, _constitutionModifier)]]"></paper-input>
-                    </div>
-                    <div class="flexColumn">
-                        <label>Max Hit Points</label>
-                        <paper-input class="visibleDisabled" value="[[_getHitPoints(hitDice, _constitutionModifier)]]"></paper-input>
-                    </div>
+        <div class="flexInline">
+            <div class="flex">
+                <div class="flexColumn">
+                    <label>Hit Points</label>
+                    <paper-input class="visibleDisabled" value="[[_getHitPoints(hitDice, _constitutionModifier)]]"></paper-input>
                 </div>
                 <div class="flexColumn">
-                    <label>Proficiency Bonus</label>
-                    <paper-input class="visibleDisabled" value="{{proficiencyBonus}}"></paper-input>
-                </div>
-                <div class="flexColumn">
-                    <label>Armour Class</label>
-                    <paper-input class="visibleDisabled" value="{{_armourClass}}"></paper-input>
-                </div>
-                <div class="flexColumn">
-                    <label>Initiative</label>
-                    <paper-input class="visibleDisabled" value="{{_initiative}}"></paper-input>
-                </div>
-                <div class="flexColumn">
-                    <label>Speed</label>
-                    <paper-input class="visibleDisabled" value="{{speed}}"></paper-input>
+                    <label>Max Hit Points</label>
+                    <paper-input class="visibleDisabled" value="[[_getHitPoints(hitDice, _constitutionModifier)]]"></paper-input>
                 </div>
             </div>
-            <div class="flexInline">
-                <template is="dom-if" if="[[_skillChoices.length]]">
-                    <div class="flexColumn">
-                        <label>Skill Selection:</label>
-                        <div class="flexInline">
-                            <template is="dom-repeat" items="[[_skillChoices]]">
-                                <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_skillChoicesUpdated" data-id$="[[index]]"></select-multi>
-                            </template>
-                        </div>
-                    </div>
-                </template>
-                <template is="dom-if" if="[[abilityScoreBonus.options.length]]">
-                    <div class="flexColumn">
-                        <label>Ability Score Bonus Selection:</label>
-                        <div class="flexInline">
-                            <template is="dom-repeat" items="[[abilityScoreBonus.options]]">
-                                <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_abilityScoreBonusChoicesUpdated"
-                                    data-id$="[[index]]" data-value$="[[item.value]]"></select-multi>
-                            </template>
-                        </div>
-                    </div>
-                </template>
+            <div class="flexColumn">
+                <label>Proficiency Bonus</label>
+                <paper-input class="visibleDisabled" value="{{proficiencyBonus}}"></paper-input>
             </div>
-            <div class="flexInline">
-                <stat-control class="strength" stat="Strength" modifier="{{_strengthModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="[[_allSkills]]" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Strength')]]"
-                    bonus="[[_abilityScoreBonus.strength]]"></stat-control>
-                <stat-control class="dexterity" stat="Dexterity" modifier="{{_dexterityModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="[[_allSkills]]" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Dexterity')]]"
-                    bonus="[[_abilityScoreBonus.dexterity]]"></stat-control>
-                <stat-control class="constitution" stat="Constitution" modifier="{{_constitutionModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="[[_allSkills]]" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Constitution')]]"
-                    bonus="[[_abilityScoreBonus.constitution]]"></stat-control>
-                <stat-control class="intelligence" stat="Intelligence" modifier="{{_intelligenceModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="[[_allSkills]]" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Intelligence')]]"
-                    bonus="[[_abilityScoreBonus.intelligence]]"></stat-control>
-                <stat-control class="wisdom" stat="Wisdom" modifier="{{_wisdomModifier}}" proficiency-bonus="[[proficiencyBonus]]" selected-skills="[[_allSkills]]"
-                    skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]" bonus="[[_abilityScoreBonus.wisdom]]"></stat-control>
-                <stat-control class="charisma" stat="Charisma" modifier="{{_charismaModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                    selected-skills="[[_allSkills]]" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Charisma')]]"
-                    bonus="[[_abilityScoreBonus.charisma]]"></stat-control>
+            <div class="flexColumn">
+                <label>Armour Class</label>
+                <paper-input class="visibleDisabled" value="{{_armourClass}}"></paper-input>
             </div>
-        </card-wrapper>
+            <div class="flexColumn">
+                <label>Initiative</label>
+                <paper-input class="visibleDisabled" value="{{_initiative}}"></paper-input>
+            </div>
+            <div class="flexColumn">
+                <label>Speed</label>
+                <paper-input class="visibleDisabled" value="{{speed}}"></paper-input>
+            </div>
+        </div>
+        <div class="flexInline">
+            <template is="dom-if" if="[[_skillChoices.length]]">
+                <div class="flexColumn">
+                    <label>Skill Selection:</label>
+                    <div class="flexInline">
+                        <template is="dom-repeat" items="[[_skillChoices]]">
+                            <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_skillChoicesUpdated" data-id$="[[index]]"></select-multi>
+                        </template>
+                    </div>
+                </div>
+            </template>
+            <template is="dom-if" if="[[abilityScoreBonus.options.length]]">
+                <div class="flexColumn">
+                    <label>Ability Score Bonus Selection:</label>
+                    <div class="flexInline">
+                        <template is="dom-repeat" items="[[abilityScoreBonus.options]]">
+                            <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_abilityScoreBonusChoicesUpdated"
+                                data-id$="[[index]]" data-value$="[[item.value]]"></select-multi>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <div class="flexInline">
+            <stat-control class="strength" stat="Strength" modifier="{{_strengthModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+                selected-skills="[[_allSkills]]" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Strength')]]"
+                bonus="[[_abilityScoreBonus.strength]]"></stat-control>
+            <stat-control class="dexterity" stat="Dexterity" modifier="{{_dexterityModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+                selected-skills="[[_allSkills]]" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Dexterity')]]"
+                bonus="[[_abilityScoreBonus.dexterity]]"></stat-control>
+            <stat-control class="constitution" stat="Constitution" modifier="{{_constitutionModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+                selected-skills="[[_allSkills]]" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Constitution')]]"
+                bonus="[[_abilityScoreBonus.constitution]]"></stat-control>
+            <stat-control class="intelligence" stat="Intelligence" modifier="{{_intelligenceModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+                selected-skills="[[_allSkills]]" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Intelligence')]]"
+                bonus="[[_abilityScoreBonus.intelligence]]"></stat-control>
+            <stat-control class="wisdom" stat="Wisdom" modifier="{{_wisdomModifier}}" proficiency-bonus="[[proficiencyBonus]]" selected-skills="[[_allSkills]]"
+                skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]" bonus="[[_abilityScoreBonus.wisdom]]"></stat-control>
+            <stat-control class="charisma" stat="Charisma" modifier="{{_charismaModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+                selected-skills="[[_allSkills]]" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Charisma')]]"
+                bonus="[[_abilityScoreBonus.charisma]]"></stat-control>
+        </div>
     </template>
 
     <script>
