@@ -7,6 +7,7 @@
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../components/card-wrapper.html">
 <link rel="import" href="../components/proficiency-control.html">
+<link rel="import" href="../components/display-description.html">
 <link rel="import" href="./spells-page.html">
 <link rel="import" href="./stat-page.html">
 
@@ -104,9 +105,7 @@
 		<card-wrapper title="Traits">
 			<template is="dom-repeat" items="[[_all.traits]]">
 				<card-wrapper class="subcard" title="[[item]]">
-					<template is="dom-repeat" items="[[_getTraitDescription(_traits, item)]]" as="desc">
-						<p>[[desc]]</p>
-					</template>
+					<display-description description="[[_getTraitDescription(_traits, item)]]"></display-description>
 				</card-wrapper>
 			</template>
 		</card-wrapper>
@@ -246,7 +245,9 @@
 			}
 
 			_getTraitDescription(traits, trait) {
-				return (traits[trait] || { description: trait }).description.split('\n');
+				let value = (traits[trait] || { description: trait }).description;
+				if (Array.isArray(value)) return value;
+				return value.split('\n');
 			}
 
 			_levelUp() {
@@ -328,7 +329,7 @@
 					return 0;
 				}).reduce(this._sum, 0);
 
-				if(minimum !== null && ret < minimum) return minimum;
+				if (minimum !== null && ret < minimum) return minimum;
 
 				return ret;
 			}

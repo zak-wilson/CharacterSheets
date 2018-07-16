@@ -1,0 +1,43 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="display-description">
+	<template>
+		<style>
+		</style>
+		<template is="dom-repeat" items="[[description]]">
+			<template is="dom-if" if="[[item.header]]">
+				<h4>[[item.header]]</h4>
+			</template>
+			<template is="dom-if" if="[[_isString(item)]]">
+				<p>[[item]]</p>
+			</template>
+			<template is="dom-if" if="[[item.bullets]]">
+				<ul>
+					<template is="dom-repeat" items="[[item.bullets]]" as="bullet">
+						<li>[[bullet]]</li>
+					</template>
+				</ul>
+			</template>
+		</template>
+	</template>
+
+	<script>
+		Polymer.setPassiveTouchGestures(true);
+
+		class DisplayDescription extends Polymer.Element {
+			static get is() { return 'display-description'; }
+
+			static get properties() {
+				return {
+					description: Array
+				};
+			}
+
+			_isString(value) {
+				return typeof value === 'string';
+			}
+		}
+
+		window.customElements.define(DisplayDescription.is, DisplayDescription);
+	</script>
+</dom-module>
