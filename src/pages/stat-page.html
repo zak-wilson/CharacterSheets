@@ -155,6 +155,11 @@
                     savingThrows: Array,
                     hitDice: String,
                     speed: Number,
+                    modifiers: {
+                        type: Object,
+                        computed: '_getModifiers(_strengthModifier, _dexterityModifier, _constitutionModifier, _intelligenceModifier, _wisdomModifier, _charismaModifier)',
+                        notify: true
+                    },
                     _skillChoices: {
                         type: Array,
                         value: [],
@@ -177,12 +182,30 @@
                         type: Array,
                         value: []
                     },
-                    _strengthModifier: Number,
-                    _dexterityModifier: Number,
-                    _constitutionModifier: Number,
-                    _intelligenceModifier: Number,
-                    _wisdomModifier: Number,
-                    _charismaModifier: Number,
+                    _strengthModifier: {
+                        type: Number,
+                        value: 0
+                    },
+                    _dexterityModifier: {
+                        type: Number,
+                        value: 0
+                    },
+                    _constitutionModifier: {
+                        type: Number,
+                        value: 0
+                    },
+                    _intelligenceModifier: {
+                        type: Number,
+                        value: 0
+                    },
+                    _wisdomModifier: {
+                        type: Number,
+                        value: 0
+                    },
+                    _charismaModifier: {
+                        type: Number,
+                        value: 0
+                    },
                     _armourClass: {
                         type: Number,
                         value: 0
@@ -286,6 +309,17 @@
                     });
                 });
                 return asb;
+            }
+
+            _getModifiers(strengthModifier, dexterityModifier, constitutionModifier, intelligenceModifier, wisdomModifier, charismaModifier) {
+                return {
+                    strengthModifier,
+                    dexterityModifier,
+                    constitutionModifier,
+                    intelligenceModifier,
+                    wisdomModifier,
+                    charismaModifier,
+                }
             }
 
             _collectionDiff(c1, c2) {

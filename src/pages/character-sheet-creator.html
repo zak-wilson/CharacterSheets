@@ -88,7 +88,7 @@
 		</card-wrapper>
 		<card-wrapper title="Stats">
 			<stat-page skill-options="[[_all.skills]]" ability-score-bonus="[[_all.abilityScoreBonus]]" proficiency-bonus="[[_all.proficiencyBonus]]"
-			 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]"></stat-page>
+			 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]" modifiers="{{_statModifiers}}"></stat-page>
 		</card-wrapper>
 		<card-wrapper title="Proficiencies">
 			<proficiency-control type="Weapon" options="[[_all.proficiencies.weapon]]"></proficiency-control>
@@ -183,9 +183,13 @@
 						type: String,
 						observer: '_selectedBackgroundChanged'
 					},
+					_statModifiers: {
+						type: Object,
+						value: () => { return {} }
+					},
 					_all: {
 						type: Object,
-						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace, _selectedBackground, _level)'
+						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace, _selectedBackground, _level, _statModifiers)'
 					}
 				};
 			}
@@ -252,12 +256,17 @@
 				return level < 20;
 			}
 
-			_getAll(selectedClass, selectedRace, selectedSubrace, selectedBackground, level) {
+			_getAll(selectedClass, selectedRace, selectedSubrace, selectedBackground, level, statModifiers) {
 				var sc = selectedClass || {};
 				var sr = selectedRace || {};
 				var ssr = selectedSubrace || {};
 				var sb = selectedBackground || {};
 				var all = [sc, sr, ssr, sb].concat((sc.levels || []).slice(0, Number(level) || 1));
+
+				var proficiencyBonus = all.map((o) => o.proficiencyBonus || 0).reduce(this._sum, 0);
+				let spellSaveDifficultyClass = this._processStatString(sc.spellSaveDifficultyClass, statModifiers, proficiencyBonus, level);
+				let spellAttackModifier = this._processStatString(sc.spellAttackModifier, statModifiers, proficiencyBonus, level);
+				let spellsKnown = this._processStatString(sc.spellsKnown, statModifiers, proficiencyBonus, level);
 				return {
 					abilityScoreBonus: all.map((o) => o.abilityScoreBonus || {}).reduce((acc, val) => {
 						return {
@@ -282,13 +291,13 @@
 							language: acc.language.concat(val.language || [])
 						}
 					}, { weapon: [], armour: [], tool: [], language: [] }),
-					proficiencyBonus: all.map((o) => o.proficiencyBonus || 0).reduce(this._sum, 0),
+					proficiencyBonus: proficiencyBonus,
 					savingThrows: all.map((o) => o.savingThrows || []).reduce(this._collectionCombiner, []),
 					skills: all.map((o) => o.skills || []).reduce(this._collectionCombiner, []),
 					speed: all.map((o) => o.speed || 0).reduce(this._sum, 0),
-					spellAttackModifier: sc.spellAttackModifier,
-					spellSaveDifficultyClass: sc.spellSaveDifficultyClass,
-					spellsKnown: all.map((o) => o.spellsKnown || 0).reduce(this._sum, 0),
+					spellAttackModifier: spellAttackModifier,
+					spellSaveDifficultyClass: spellSaveDifficultyClass,
+					spellsKnown: spellsKnown,
 					spellSlots: all.map((o) => o.spellSlots || []).reduce((acc, val) => {
 						val.forEach((o, index) => {
 							acc[index] = (acc[index] || 0) + o;
@@ -297,6 +306,31 @@
 					}, []),
 					traits: all.map((o) => o.traits || []).reduce(this._collectionCombiner, []),
 				};
+			}
+
+			_processStatString(value, statModifiers, proficiencyBonus, level) {
+				if (!value) return 0;
+				if (typeof (value) === 'number') return value;
+
+				let minimum = null;
+				let stringVal = value;
+				if (value.value) {
+					stringVal = value.value;
+					minimum = value.minimum;
+				}
+
+				let pieces = stringVal.split(' + ');
+				let ret = pieces.map(piece => {
+					if (Number(piece)) return Number(piece);
+					if (piece === 'proficiencyBonus') return proficiencyBonus;
+					if (piece === 'level') return Number(level);
+					if (statModifiers[piece]) return statModifiers[piece];
+					return 0;
+				}).reduce(this._sum, 0);
+
+				if(minimum !== null && ret < minimum) return minimum;
+
+				return ret;
 			}
 
 			_sum(accumulator, value) {
