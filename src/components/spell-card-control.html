@@ -6,7 +6,8 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../components/card-wrapper.html">
+<link rel="import" href="./card-wrapper.html">
+<link rel="import" href="./display-description.html">
 
 <dom-module id="spell-card-control">
     <template>
@@ -86,7 +87,7 @@
                         </li>
                     </template>
                 </ul>
-                <span class="description">[[spell.description]]</span>
+                <display-description description="[[spell.description]]"></display-description>
             </div>
             <paper-button on-tap="_removeCard" slot="actionIcon">
                 <iron-icon icon="clear"></iron-icon>Remove
