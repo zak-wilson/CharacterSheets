@@ -266,12 +266,13 @@
 				var sr = selectedRace || {};
 				var ssr = selectedSubrace || {};
 				var sb = selectedBackground || {};
-				var all = [sc, sr, ssr, sb].concat((sc.levels || []).slice(0, Number(level) || 1));
+				var scl = (sc.levels || []).slice(0, Number(level) || 1) || [];
+				var all = [sc, sr, ssr, sb].concat(scl);
 
 				var proficiencyBonus = all.map((o) => o.proficiencyBonus || 0).reduce(this._sum, 0);
 				let spellSaveDifficultyClass = this._processStatString(sc.spellSaveDifficultyClass, statModifiers, proficiencyBonus, level);
 				let spellAttackModifier = this._processStatString(sc.spellAttackModifier, statModifiers, proficiencyBonus, level);
-				let spellsKnown = this._processStatString(sc.spellsKnown, statModifiers, proficiencyBonus, level);
+				let spellsKnown = this._processStatString(sc.spellsKnown || scl.map(l => l.spellsKnown).reduce(this._sum, 0), statModifiers, proficiencyBonus, level);
 				return {
 					abilityScoreBonus: all.map((o) => o.abilityScoreBonus || {}).reduce((acc, val) => {
 						return {
