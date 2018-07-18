@@ -251,7 +251,7 @@
 			}
 
 			_getTraitDescription(traits, trait) {
-				return (traits[trait] || { description: trait }).description;
+				return (traits[trait] || { description: [trait] }).description;
 			}
 
 			_levelUp() {
