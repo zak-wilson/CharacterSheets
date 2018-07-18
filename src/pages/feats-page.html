@@ -1,0 +1,74 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dropdown/paper-dropdown.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../components/card-wrapper.html">
+<link rel="import" href="../components/spell-card-control.html">
+
+<dom-module id="feats-page">
+	<template>
+		<style>
+			.subcard {
+				word-wrap: break-word;
+				--title-style: {
+					font-size: 18px;
+					margin: 8px 0 5px 0;
+				}
+			}
+		</style>
+		<div>
+			<paper-dropdown label="Feat" value="{{_selectedFeatValue}}" searchable="true">
+				<template is="dom-repeat" items="[[_getAvailableFeats(feats, _selectedFeats)]]">
+					<paper-item value$="[[item]]">[[item.name]]</paper-item>
+				</template>
+			</paper-dropdown>
+			<paper-icon-button icon="add" title="Add Feat" on-tap="_addFeat"></paper-icon-button>
+		</div>
+
+		<template is="dom-repeat" items="[[_selectedFeats]]">
+			<card-wrapper class="subcard" title="[[item.name]]">
+				<display-description description="[[item.description]]"></display-description>
+			</card-wrapper>
+		</template>
+	</template>
+
+	<script>
+		Polymer.setPassiveTouchGestures(true);
+
+		class FeatsPage extends Polymer.Element {
+			static get is() { return 'feats-page'; }
+
+			static get properties() {
+				return {
+					feats: Object,
+					_selectedFeatValue: Object,
+					_selectedFeats: {
+						type: Array,
+						value: []
+					}
+				};
+			}
+
+			_addFeat() {
+				if (!this._selectedFeatValue) return;
+
+				this._selectedFeats = this._selectedFeats
+					.concat(JSON.parse(this._selectedFeatValue));
+				this._selectedFeatValue = null;
+			}
+
+			_getAvailableFeats(feats, selectedFeats) {
+				let featsToReview = Object.keys(feats || {}).map((feat) => feats[feat]);
+				let featsSelected = (selectedFeats || []).map(feat => feat.name);
+
+				let featsToShow = featsToReview.filter(feat => !featsSelected.includes(feat.name));
+				return featsToShow;
+			}
+		}
+
+		window.customElements.define(FeatsPage.is, FeatsPage);
+	</script>
+</dom-module>

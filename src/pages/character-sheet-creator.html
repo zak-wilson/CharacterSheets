@@ -9,6 +9,7 @@
 <link rel="import" href="../components/proficiency-control.html">
 <link rel="import" href="../components/display-description.html">
 <link rel="import" href="./spells-page.html">
+<link rel="import" href="./feats-page.html">
 <link rel="import" href="./stat-page.html">
 
 <dom-module id="character-sheet-creator">
@@ -100,7 +101,10 @@
 		<card-wrapper title="Spells">
 			<spells-page spells="[[_spells]]" class-name="[[_selectedClass.name]]" spell-save-difficulty-class="[[_all.spellSaveDifficultyClass]]"
 			 spell-attack-modifier="[[_all.spellAttackModifier]]" spell-slots="[[_all.spellSlots]]" spells-known="[[_all.spellsKnown]]"
-			 cantrips-known="[[_all.cantripsKnown]]"></spells-control>
+			 cantrips-known="[[_all.cantripsKnown]]"></spells-page>
+		</card-wrapper>
+		<card-wrapper title="Feats">
+			<feats-page feats="[[_feats]]"></feats-page>
 		</card-wrapper>
 		<card-wrapper title="Traits">
 			<template is="dom-repeat" items="[[_all.traits]]">
@@ -140,6 +144,7 @@
 						value: "Character Sheet Creator"
 					},
 					_spells: Object,
+					_feats: Array,
 					_traits: Object,
 					_races: Array,
 					_subraces: Array,
@@ -200,6 +205,7 @@
 				this._fileLoader('src/data/spells.json', (data) => this._spells = data);
 				this._fileLoader('src/data/traits.json', (data) => this._traits = data);
 				this._fileLoader('src/data/backgrounds.json', (data) => this._backgrounds = data);
+				this._fileLoader('src/data/feats.json', (data) => this._feats = data);
 			}
 
 			_selectedRaceChanged(race) {
@@ -245,9 +251,7 @@
 			}
 
 			_getTraitDescription(traits, trait) {
-				let value = (traits[trait] || { description: trait }).description;
-				if (Array.isArray(value)) return value;
-				return value.split('\n');
+				return (traits[trait] || { description: trait }).description;
 			}
 
 			_levelUp() {
