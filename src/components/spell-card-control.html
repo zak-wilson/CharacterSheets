@@ -86,6 +86,12 @@
                             <span id="duration">[[spell.duration]]</span>
                         </li>
                     </template>
+                    <template is="dom-if" if="[[spell.book]]">
+                        <li>
+                            <label class="attributes" for="book">Book: </label>
+                            <span id="book">[[spell.book]] - [[spell.page]]</span>
+                        </li>
+                    </template>
                 </ul>
                 <display-description description="[[spell.description]]"></display-description>
             </div>
