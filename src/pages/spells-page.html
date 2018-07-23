@@ -62,7 +62,7 @@
 			</div>
 		</template>
 		<div>
-			<paper-dropdown disabled$="[[!_canAddMore]]" label="Spell" value="{{_selectedSpellValue}}" searchable="true">
+			<paper-dropdown disabled$="[[!_canAddMore]]" label="Spell" value="{{_selectedSpellValue}}" searchable="true" horizontal-align='left'>
 				<template is="dom-repeat" items="[[_getAvailableSpells(spells, _selectedSpells, _canAddMoreCantrips, _canAddMoreSpells, spellSlots, _filterByClass, className, _override)]]">
 					<paper-item value$="[[item]]">[[item.displayName]]</paper-item>
 				</template>
