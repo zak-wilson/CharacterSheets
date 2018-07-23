@@ -26,7 +26,7 @@
 				align-items: center;
 			}
 
-			.flex>paper-checkbox {
+			.spellFilter {
 				margin-left: 8px;
 			}
 
@@ -62,13 +62,25 @@
 			</div>
 		</template>
 		<div>
-			<paper-dropdown disabled$="[[!_canAddMore]]" label="Spell" value="{{_selectedSpellValue}}" searchable="true" horizontal-align='left'>
-				<template is="dom-repeat" items="[[_getAvailableSpells(spells, _selectedSpells, _canAddMoreCantrips, _canAddMoreSpells, spellSlots, _filterByClass, className, _override)]]">
+			<paper-dropdown disabled$="[[!_canAddMore]]" label="Spell" value="{{_selectedSpellValue}}" searchable horizontal-align='left'>
+				<template is="dom-repeat" items="[[_getAvailableSpells(spells, _selectedSpells, _canAddMoreCantrips, _canAddMoreSpells, spellSlots, _filterByClass, className, _filterBySpellLevel, _override)]]">
 					<paper-item value$="[[item]]">[[item.displayName]]</paper-item>
 				</template>
 			</paper-dropdown>
 			<paper-icon-button disabled$="[[!_canAddMore]]" icon="add" title="Add Spell to Character" on-tap="_addSpell"></paper-icon-button>
-			<paper-checkbox checked="{{_filterByClass}}">Filter By Class</paper-checkbox>
+			<paper-checkbox class="spellFilter" checked="{{_filterByClass}}">Filter By Class</paper-checkbox>
+			<paper-dropdown class="spellFilter" label="Filter by Spell Level" value="{{_filterBySpellLevel}}" horizontal-align='right' multi>
+				<paper-item value="Cantrip">Cantrip</paper-item>
+				<paper-item value="1">1</paper-item>
+				<paper-item value="2">2</paper-item>
+				<paper-item value="3">3</paper-item>
+				<paper-item value="4">4</paper-item>
+				<paper-item value="5">5</paper-item>
+				<paper-item value="6">6</paper-item>
+				<paper-item value="7">7</paper-item>
+				<paper-item value="8">8</paper-item>
+				<paper-item value="9">9</paper-item>
+			</paper-dropdown>
 		</div>
 
 		<template is="dom-repeat" items="[[_spellsToDisplay]]">
@@ -126,6 +138,10 @@
 						type: Boolean,
 						value: true
 					},
+					_filterBySpellLevel: {
+						type: Array,
+						value: []
+					},
 					_selectedSpellValue: Object,
 					_selectedSpells: {
 						type: Array,
@@ -154,12 +170,17 @@
 				this._selectedSpellValue = null;
 			}
 
-			_getAvailableSpells(spells, selectedSpells, canAddMoreCantrips, canAddMoreSpells, spellSlots, filterByClass, className, override) {
+			_getAvailableSpells(spells, selectedSpells, canAddMoreCantrips, canAddMoreSpells, spellSlots, filterByClass, className, filterBySpellLevel, override) {
 				let spellsToReview = Object.keys(spells || {}).map((spell) => spells[spell]);
 				let spellsSelected = (selectedSpells || []).map(spell => spell.name);
 
 				let spellsToShow = spellsToReview.filter(spell => (canAddMoreCantrips && !spell.restrictions.level) || (canAddMoreSpells && spell.restrictions.level && spellSlots[Number(spell.restrictions.level[0])]) || override);
-				spellsToShow = spellsToShow.filter(spell => !filterByClass || (spell.restrictions.classes || []).includes(className));
+				if (filterByClass) {
+					spellsToShow = spellsToShow.filter(spell => (spell.restrictions.classes || []).includes(className));
+				}
+				if(filterBySpellLevel.length) {
+					spellsToShow = spellsToShow.filter(spell => filterBySpellLevel.includes(spell.restrictions.level && spell.restrictions.level[0] || 'Cantrip'));
+				}
 				spellsToShow = spellsToShow.filter(spell => !spellsSelected.includes(spell.name));
 				spellsToShow = spellsToShow.sort(this._sortSpells);
 
