@@ -13,6 +13,7 @@
 <link rel="import" href="../my-icons.html">
 
 <link rel="lazy-import" href="./character-sheet-creator.html">
+<link rel="lazy-import" href="./help-page.html">
 
 <dom-module id="main-page">
 	<template>
@@ -66,6 +67,7 @@
 			<app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
 				<app-toolbar>Menu</app-toolbar>
 				<iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+					<a name="help" href="[[rootPath]]help">Help</a>
 					<a name="characterSheetCreator" href="[[rootPath]]characterSheetCreator">Character Sheet Creator</a>
 				</iron-selector>
 			</app-drawer>
@@ -80,7 +82,8 @@
 					</app-toolbar>
 				</app-header>
 
-				<iron-pages selected="[[page]]" attr-for-selected="id" fallback-selection="view404" role="main">
+				<iron-pages selected="[[page]]" attr-for-selected="id" fallback-selection="help" role="main">
+					<help-page id="help"> </help-page>
 					<character-sheet-creator id="characterSheetCreator"> </character-sheet-creator>
 				</iron-pages>
 			</app-header-layout>
@@ -117,7 +120,7 @@
 			}
 
 			_routePageChanged(page) {
-				this.page = page || 'characterSheetCreator';
+				this.page = page || 'help';
 
 				if (!this.$.drawer.persistent) {
 					this.$.drawer.close();
@@ -130,8 +133,11 @@
 					case 'characterSheetCreator':
 						resolvedPageUrl = this.resolveUrl('character-sheet-creator.html');
 						break;
+					case 'help':
+						resolvedPageUrl = this.resolveUrl('help-page.html');
+						break;
 					default:
-						this.set('routeData.page', 'characterSheetCreator');
+						this.set('routeData.page', 'help');
 						return;
 				}
 				Polymer.importHref(
@@ -145,7 +151,7 @@
 				this.mainTitle = this.$[page].title;
 			}
 			_defaultPage() {
-				this.set('routeData.page', 'characterSheetCreator');
+				this.set('routeData.page', 'help');
 			}
 		}
 

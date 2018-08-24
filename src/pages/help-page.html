@@ -1,0 +1,37 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../components/card-wrapper.html">
+
+<dom-module id="help-page">
+	<template>
+		<style>
+			card-wrapper > card-wrapper {
+				--title-style: {
+					font-size: 18px;
+					margin: 8px 0 5px 0;
+				}
+			}
+		</style>
+		<card-wrapper Title="Combat">
+			<card-wrapper Title="Order of Combat"></card-wrapper>
+		</card-wrapper>
+	</template>
+
+	<script>
+		Polymer.setPassiveTouchGestures(true);
+
+		class HelpPage extends Polymer.Element {
+			static get is() { return 'help-page'; }
+
+			static get properties() {
+				return {
+					title: {
+						type: String,
+						value: "Help"
+					}
+				};
+			}
+		}
+
+		window.customElements.define(HelpPage.is, HelpPage);
+	</script>
+</dom-module>
