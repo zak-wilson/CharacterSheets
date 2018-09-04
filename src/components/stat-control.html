@@ -41,7 +41,7 @@
 				<skill-control name="Saving Throw" proficiency-bonus="[[proficiencyBonus]]" modifier="[[modifier]]" required></skill-control>
 			</template>
 			<template is="dom-repeat" items="[[skills]]">
-				<skill-control name="[[item]]" disabled checked$="[[_isChecked(selectedSkills, item)]]" proficiency-bonus="[[proficiencyBonus]]"
+				<skill-control name="[[item]]" disabled$="[[inheritValues]]" checked$="[[_isChecked(selectedSkills, item)]]" proficiency-bonus="[[proficiencyBonus]]"
 				 modifier="[[modifier]]"></skill-control>
 			</template>
 		</div>
@@ -72,7 +72,8 @@
 						reflectToAttribute: true
 					},
 					skills: Array,
-					selectedSkills: Array
+					selectedSkills: Array,
+					inheritValues: Boolean
 				};
 			}
 

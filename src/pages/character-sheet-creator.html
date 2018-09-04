@@ -90,13 +90,13 @@
 		</card-wrapper>
 		<card-wrapper title="Stats">
 			<stat-page skill-options="[[_all.skills]]" ability-score-bonus="[[_all.abilityScoreBonus]]" proficiency-bonus="[[_all.proficiencyBonus]]"
-			 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]" modifiers="{{_statModifiers}}"></stat-page>
+			 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]" modifiers="{{_statModifiers}}" inherit-values="[[_inheritValues]]"></stat-page>
 		</card-wrapper>
 		<card-wrapper title="Proficiencies">
-			<proficiency-control type="Weapon" options="[[_all.proficiencies.weapon]]"></proficiency-control>
-			<proficiency-control type="Armour" options="[[_all.proficiencies.armour]]"></proficiency-control>
-			<proficiency-control type="Tool" options="[[_all.proficiencies.tool]]"></proficiency-control>
-			<proficiency-control type="Language" options="[[_all.proficiencies.language]]"></proficiency-control>
+			<proficiency-control type="Weapon" options="[[_all.proficiencies.weapon]]" inherit-values="[[_inheritValues]]"></proficiency-control>
+			<proficiency-control type="Armour" options="[[_all.proficiencies.armour]]" inherit-values="[[_inheritValues]]"></proficiency-control>
+			<proficiency-control type="Tool" options="[[_all.proficiencies.tool]]" inherit-values="[[_inheritValues]]"></proficiency-control>
+			<proficiency-control type="Language" options="[[_all.proficiencies.language]]" inherit-values="[[_inheritValues]]"></proficiency-control>
 		</card-wrapper>
 		<card-wrapper title="Spells">
 			<spells-page spells="[[_spells]]" class-name="[[_selectedClass.name]]" spell-save-difficulty-class="[[_all.spellSaveDifficultyClass]]"
@@ -194,6 +194,10 @@
 					_all: {
 						type: Object,
 						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace, _selectedBackground, _level, _statModifiers)'
+					},
+					_inheritValues: {
+						type: Boolean,
+						value: false
 					}
 				};
 			}
