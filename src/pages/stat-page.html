@@ -120,24 +120,24 @@
             </template>
         </div>
         <div class="flexInline">
-            <stat-control class="strength" stat="Strength" modifier="{{_strengthModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+            <stat-control class="strength" stat="Strength" value="{{_strength}}" modifier="{{_strengthModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                 selected-skills="[[_allSkills]]" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Strength')]]"
                 bonus="[[_abilityScoreBonus.strength]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="dexterity" stat="Dexterity" modifier="{{_dexterityModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+            <stat-control class="dexterity" stat="Dexterity" value="{{_dexterity}}" modifier="{{_dexterityModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                 selected-skills="[[_allSkills]]" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Dexterity')]]"
                 bonus="[[_abilityScoreBonus.dexterity]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="constitution" stat="Constitution" modifier="{{_constitutionModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+            <stat-control class="constitution" stat="Constitution" value="{{_constitution}}" modifier="{{_constitutionModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                 selected-skills="[[_allSkills]]" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Constitution')]]"
                 bonus="[[_abilityScoreBonus.constitution]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="intelligence" stat="Intelligence" modifier="{{_intelligenceModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+            <stat-control class="intelligence" stat="Intelligence" value="{{_intelligence}}" modifier="{{_intelligenceModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                 selected-skills="[[_allSkills]]" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Intelligence')]]"
                 bonus="[[_abilityScoreBonus.intelligence]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="wisdom" stat="Wisdom" modifier="{{_wisdomModifier}}" proficiency-bonus="[[proficiencyBonus]]" selected-skills="[[_allSkills]]"
-                skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]" bonus="[[_abilityScoreBonus.wisdom]]"
-                inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="charisma" stat="Charisma" modifier="{{_charismaModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+            <stat-control class="wisdom" stat="Wisdom" value="{{_wisdom}}" modifier="{{_wisdomModifier}}" proficiency-bonus="[[proficiencyBonus]]"
+                selected-skills="[[_allSkills]]" skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]"
+                bonus="[[_abilityScoreBonus.wisdom]]" inherit-values="[[inheritValues]]"></stat-control>
+            <stat-control class="charisma" stat="Charisma" value="{{_charisma}}" modifier="{{_charismaModifier}}" proficiency-bonus="[[proficiencyBonus]]"
                 selected-skills="[[_allSkills]]" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Charisma')]]"
-                bonus="[[_abilityScoreBonus.charisma]]" inherit-values="[[inheritValues]]"></stat-control>
+                bonus="[[_abilityScoreBonus.charisma]]" inherit-values="[[inheritValues]]" checked-skills="{{_charismaSelectedSkills}}"></stat-control>
         </div>
     </template>
 
@@ -163,6 +163,11 @@
                         computed: '_getModifiers(_strengthModifier, _dexterityModifier, _constitutionModifier, _intelligenceModifier, _wisdomModifier, _charismaModifier)',
                         notify: true
                     },
+                    stats: {
+                        type: Object,
+                        computed: '_getStats(_strength, _dexterity, _constitution, _intelligence, _wisdom, _charisma, _allSkills, _currentHitPoints, _maxHitPoints, proficiencyBonus, _armourClass, _initiative, speed)',
+                        notify: true
+                    },
                     inheritValues: Boolean,
                     _skillChoices: {
                         type: Array,
@@ -176,7 +181,7 @@
                     _allSkills: {
                         type: Array,
                         value: [],
-                        computed: '_getAllSkills(skillOptions, _selectedSkills)'
+                        computed: '_getAllSkills(skillOptions, _selectedSkills, _strengthSelectedSkills, _dexteritySelectedSkills, _constitutionSelectedSkills, _intelligenceSelectedSkills, _wisdomSelectedSkills, _charismaSelectedSkills)'
                     },
                     _abilityScoreBonus: {
                         type: Object,
@@ -186,30 +191,44 @@
                         type: Array,
                         value: []
                     },
+                    _strength: Number,
                     _strengthModifier: {
                         type: Number,
                         value: 0
                     },
+                    _strengthSelectedSkills: { type: Object, value: {} },
+                    _dexterity: Number,
                     _dexterityModifier: {
                         type: Number,
-                        value: 0
+                        value: 0,
+                        observer: '_updateInitiative'
                     },
+                    _dexteritySelectedSkills: { type: Object, value: {} },
+                    _constitution: Number,
                     _constitutionModifier: {
                         type: Number,
-                        value: 0
+                        value: 0,
+                        observer: '_updateHitPoints'
                     },
+                    _constitutionSelectedSkills: { type: Object, value: {} },
+                    _intelligence: Number,
                     _intelligenceModifier: {
                         type: Number,
                         value: 0
                     },
+                    _intelligenceSelectedSkills: { type: Object, value: {} },
+                    _wisdom: Number,
                     _wisdomModifier: {
                         type: Number,
                         value: 0
                     },
+                    _wisdomSelectedSkills: { type: Object, value: {} },
+                    _charisma: Number,
                     _charismaModifier: {
                         type: Number,
                         value: 0
                     },
+                    _charismaSelectedSkills: { type: Object, value: {} },
                     _armourClass: {
                         type: Number,
                         value: 0
@@ -279,8 +298,16 @@
             _getSkillChoices(skillOptions, inheritValues) {
                 return !inheritValues ? [] : (skillOptions || []).filter((skill) => skill.choose);
             }
-            _getAllSkills(skillOptions, selectedSkills) {
-                return skillOptions.filter((skill) => !skill.choose).concat(selectedSkills).reduce((acc, val) => acc.concat(val), []);
+            _getAllSkills(skillOptions, selectedSkills, strengthSkills, dexteritySkills, constitutionSkills, intelligenceSkills, wisdomSkills, charismaSkills) {
+                return skillOptions.filter((skill) => !skill.choose)
+                    .concat(selectedSkills)
+                    .reduce((acc, val) => acc.concat(val), [])
+                    .concat(Object.keys(strengthSkills))
+                    .concat(Object.keys(dexteritySkills))
+                    .concat(Object.keys(constitutionSkills))
+                    .concat(Object.keys(intelligenceSkills))
+                    .concat(Object.keys(wisdomSkills))
+                    .concat(Object.keys(charismaSkills));
             }
             _setUp(dexModifier) {
                 this._initiative = dexModifier || 0;
@@ -317,6 +344,17 @@
                 return !inheritValues ? [] : asb;
             }
 
+            _updateHitPoints(conMod, oldConMod) {
+                let diff = conMod - (oldConMod || 0);
+                this._maxHitPoints = Number(this._maxHitPoints) + diff;
+                this._currentHitPoints = Number(this._currentHitPoints) + diff;
+            }
+
+            _updateInitiative(dexMod, oldDexMod) {
+                let diff = dexMod - (oldDexMod || 0);
+                this._initiative = Number(this._initiative) + diff;
+            }
+
             _getModifiers(strengthModifier, dexterityModifier, constitutionModifier, intelligenceModifier, wisdomModifier, charismaModifier) {
                 return {
                     strengthModifier,
@@ -325,6 +363,23 @@
                     intelligenceModifier,
                     wisdomModifier,
                     charismaModifier,
+                }
+            }
+            _getStats(strength, dexterity, constitution, intelligence, wisdom, charisma, skills, currentHitPoints, maxHitPoints, proficiencyBonus, armourClass, initiative, speed) {
+                return {
+                    strength,
+                    dexterity,
+                    constitution,
+                    intelligence,
+                    wisdom,
+                    charisma,
+                    skills,
+                    currentHitPoints,
+                    maxHitPoints,
+                    proficiencyBonus,
+                    armourClass,
+                    initiative,
+                    speed
                 }
             }
 

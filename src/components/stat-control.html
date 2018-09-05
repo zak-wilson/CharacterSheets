@@ -42,7 +42,7 @@
 			</template>
 			<template is="dom-repeat" items="[[skills]]">
 				<skill-control name="[[item]]" disabled$="[[inheritValues]]" checked$="[[_isChecked(selectedSkills, item)]]" proficiency-bonus="[[proficiencyBonus]]"
-				 modifier="[[modifier]]"></skill-control>
+				 modifier="[[modifier]]" on-checked-changed="_selectSkills"></skill-control>
 			</template>
 		</div>
 	</template>
@@ -58,7 +58,8 @@
 					stat: String,
 					value: {
 						type: Number,
-						value: 0
+						value: 0,
+						notify: true
 					},
 					bonus: Number,
 					modifier: {
@@ -73,12 +74,26 @@
 					},
 					skills: Array,
 					selectedSkills: Array,
-					inheritValues: Boolean
+					inheritValues: Boolean,
+					checkedSkills: {
+						type: Object,
+						notify: true
+					}
 				};
 			}
 
 			_isChecked(skills, skill) {
 				return skills.includes(skill);
+			}
+
+			_selectSkills(e) {
+				let skills = JSON.parse(JSON.stringify(this.checkedSkills || {}));
+				if (e.detail.value) {
+					skills[e.target.name] = 1;
+				} else {
+					delete skills[e.target.name];
+				}
+				this.checkedSkills = skills;
 			}
 		}
 

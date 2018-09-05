@@ -13,6 +13,7 @@
 		<style>
 			.subcard {
 				word-wrap: break-word;
+
 				--title-style: {
 					font-size: 18px;
 					margin: 8px 0 5px 0;
@@ -22,14 +23,17 @@
 		<div>
 			<paper-dropdown label="Feat" value="{{_selectedFeatValue}}" searchable="true">
 				<template is="dom-repeat" items="[[_getAvailableFeats(feats, _selectedFeats)]]">
-					<paper-item value$="[[item]]">[[item.name]]</paper-item>
+					<paper-item value$="[[item]]">[[item.displayName]]</paper-item>
 				</template>
 			</paper-dropdown>
 			<paper-icon-button icon="add" title="Add Feat" on-tap="_addFeat"></paper-icon-button>
 		</div>
 
 		<template is="dom-repeat" items="[[_selectedFeats]]">
-			<card-wrapper class="subcard" title="[[item.name]]">
+			<card-wrapper class="subcard" title="[[item.displayName]]">
+				<paper-button data-item$="[[item]]" on-tap="_removeItem" slot="actionIcon">
+					<iron-icon icon="clear"></iron-icon>Remove
+				</paper-button>
 				<display-description description="[[item.description]]"></display-description>
 			</card-wrapper>
 		</template>
@@ -44,12 +48,24 @@
 			static get properties() {
 				return {
 					feats: Object,
+					selectedFeatNames: {
+						type: Array,
+						notify: true
+					},
+					loadingFile: Boolean,
 					_selectedFeatValue: Object,
 					_selectedFeats: {
 						type: Array,
-						value: []
+						value: [],
+						observer: '_updateSelectedFeatNames'
 					}
 				};
+			}
+
+			static get observers() {
+				return [
+					'_loadFeats(feats, selectedFeatNames, loadingFile)',
+				];
 			}
 
 			_addFeat() {
@@ -66,6 +82,22 @@
 
 				let featsToShow = featsToReview.filter(feat => !featsSelected.includes(feat.name));
 				return featsToShow;
+			}
+
+			_updateSelectedFeatNames(feats) {
+				if (this.loadingFile) return;
+				this.selectedFeatNames = feats.map(feat => feat.name);
+			}
+			_loadFeats(feats, selectedFeats, loading) {
+				if (!loading) return;
+				this._selectedFeats = selectedFeats.map(feat => feats[feat]);
+			}
+
+			_removeItem(e) {
+				let featToRemove = JSON.parse(e.target.dataset.item);
+				let index = this._selectedFeats.findIndex(feat => feat.name === featToRemove.name);
+				this._selectedFeats.splice(index, 1);
+				this._selectedFeats = JSON.parse(JSON.stringify(this._selectedFeats));
 			}
 		}
 

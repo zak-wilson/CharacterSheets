@@ -16,6 +16,7 @@
 				flex-direction: column;
 				align-items: center;
 				margin: 8px;
+
 				--paper-font-caption: {
 					line-height: 0;
 				}
@@ -62,14 +63,16 @@
 			</div>
 		</template>
 		<div>
-			<paper-dropdown disabled$="[[!_canAddMore]]" label="Spell" value="{{_selectedSpellValue}}" searchable horizontal-align='left'>
+			<paper-dropdown disabled$="[[!_canAddMore]]" label="Spell" value="{{_selectedSpellValue}}" searchable
+			 horizontal-align='left'>
 				<template is="dom-repeat" items="[[_getAvailableSpells(spells, _selectedSpells, _canAddMoreCantrips, _canAddMoreSpells, spellSlots, _filterByClass, className, _filterBySpellLevel, _override)]]">
 					<paper-item value$="[[item]]">[[item.displayName]]</paper-item>
 				</template>
 			</paper-dropdown>
 			<paper-icon-button disabled$="[[!_canAddMore]]" icon="add" title="Add Spell to Character" on-tap="_addSpell"></paper-icon-button>
 			<paper-checkbox class="spellFilter" checked="{{_filterByClass}}">Filter By Class</paper-checkbox>
-			<paper-dropdown class="spellFilter" label="Filter by Spell Level" value="{{_filterBySpellLevel}}" horizontal-align='right' multi>
+			<paper-dropdown class="spellFilter" label="Filter by Spell Level" value="{{_filterBySpellLevel}}" horizontal-align='right'
+			 multi>
 				<paper-item value="Cantrip">Cantrip</paper-item>
 				<paper-item value="1">1st-level</paper-item>
 				<paper-item value="2">2nd-level</paper-item>
@@ -109,15 +112,17 @@
 			static get properties() {
 				return {
 					spells: Object,
-					className: {
-						type: String,
-						observer: '_resetSpells'
-					},
+					className: String,
 					spellSaveDifficultyClass: Number,
 					spellAttackModifier: Number,
 					spellSlots: Array,
 					spellsKnown: Number,
 					cantripsKnown: Number,
+					selectedSpellNames: {
+						type: Array,
+						notify: true
+					},
+					loadingFile: Boolean,
 					_spellSlots: {
 						type: Array,
 						computed: '_getSpellSlots(spellSlots, cantripsKnown, _override)'
@@ -145,7 +150,8 @@
 					_selectedSpellValue: Object,
 					_selectedSpells: {
 						type: Array,
-						value: []
+						value: [],
+						observer: '_updateSelectedSpellNames'
 					},
 					_override: {
 						type: Boolean,
@@ -158,8 +164,20 @@
 				};
 			}
 
-			_resetSpells() {
-				this._selectedSpells = [];
+			static get observers() {
+				return [
+					'_loadSpells(spells, selectedSpellNames, loadingFile)',
+				];
+			}
+
+			_updateSelectedSpellNames(selectedSpells) {
+				if (this.loadingFile) return;
+				this.selectedSpellNames = selectedSpells.map(spell => spell.name);
+			}
+
+			_loadSpells(spells, selectedSpells, loading) {
+				if (!loading) return;
+				this._selectedSpells = selectedSpells.map(feat => spells[feat]);
 			}
 
 			_addSpell() {
@@ -178,7 +196,7 @@
 				if (filterByClass) {
 					spellsToShow = spellsToShow.filter(spell => (spell.restrictions.classes || []).includes(className));
 				}
-				if(filterBySpellLevel.length) {
+				if (filterBySpellLevel.length) {
 					spellsToShow = spellsToShow.filter(spell => filterBySpellLevel.includes(spell.restrictions.level && spell.restrictions.level[0] || 'Cantrip'));
 				}
 				spellsToShow = spellsToShow.filter(spell => !spellsSelected.includes(spell.name));
