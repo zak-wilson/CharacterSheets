@@ -139,8 +139,8 @@
 			<paper-textarea value="{{_other}}"></paper-textarea>
 		</card-wrapper>
 		<div class="flexInline">
-			<paper-fab icon="cloud-download" on-tap="_save"></paper-fab>
-			<paper-fab icon="cloud-upload" on-tap="_load"></paper-fab>
+			<paper-fab icon="cloud-download" on-tap="_save" hidden></paper-fab>
+			<paper-fab icon="cloud-upload" on-tap="_load" hidden></paper-fab>
 			<input id="characterUploader" type="file" on-change="_loadedFile" hidden />
 		</div>
 	</template>
