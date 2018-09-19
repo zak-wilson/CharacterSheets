@@ -22,7 +22,8 @@
     "web-animations-js": "^2.3.1",
     "paper-button": "@polymer/paper-button#^2.1.1",
     "iron-icons": "@polymer/iron-icons#^2.1.1",
-    "paper-dropdown": "pushkar8723/paper-dropdown#^2.0.2"
+    "paper-dropdown": "pushkar8723/paper-dropdown#^2.0.2",
+    "paper-fab": "^2.1.0"
   },
   "resolutions": {
     "polymer": "^2.0.0"
