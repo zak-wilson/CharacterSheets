@@ -49,6 +49,7 @@
                 flex-direction: column;
                 align-items: center;
                 margin: 8px;
+
                 --paper-font-caption: {
                     line-height: 0;
                 }
@@ -57,9 +58,11 @@
             .visibleDisabled {
                 width: 60px;
                 text-align: center;
+
                 --paper-input-container-disabled: {
                     opacity: 1;
                 }
+
                 --paper-input-container-underline-disabled: {
                     border-bottom-style: solid;
                 }
@@ -70,11 +73,11 @@
             <div class="flex">
                 <div class="flexColumn">
                     <label>Hit Points</label>
-                    <paper-input class="visibleDisabled" value="{{_currentHitPoints}}"></paper-input>
+                    <paper-input class="visibleDisabled" value="{{currentHitPoints}}"></paper-input>
                 </div>
                 <div class="flexColumn">
                     <label>Max Hit Points</label>
-                    <paper-input class="visibleDisabled" value="{{_maxHitPoints}}"></paper-input>
+                    <paper-input class="visibleDisabled" value="{{maxHitPoints}}"></paper-input>
                 </div>
             </div>
             <div class="flexColumn">
@@ -83,11 +86,11 @@
             </div>
             <div class="flexColumn">
                 <label>Armour Class</label>
-                <paper-input class="visibleDisabled" value="{{_armourClass}}"></paper-input>
+                <paper-input class="visibleDisabled" value="{{armourClass}}"></paper-input>
             </div>
             <div class="flexColumn">
                 <label>Initiative</label>
-                <paper-input class="visibleDisabled" value="{{_initiative}}"></paper-input>
+                <paper-input class="visibleDisabled" value="{{initiative}}"></paper-input>
             </div>
             <div class="flexColumn">
                 <label>Speed</label>
@@ -95,49 +98,24 @@
             </div>
         </div>
         <div class="flexInline">
-            <template is="dom-if" if="[[inheritValues]]">
-                <template is="dom-if" if="[[_skillChoices.length]]">
-                    <div class="flexColumn">
-                        <label>Skill Selection:</label>
-                        <div class="flexInline">
-                            <template is="dom-repeat" items="[[_skillChoices]]">
-                                <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_skillChoicesUpdated" data-id$="[[index]]"></select-multi>
-                            </template>
-                        </div>
-                    </div>
-                </template>
-                <template is="dom-if" if="[[abilityScoreBonus.options.length]]">
-                    <div class="flexColumn">
-                        <label>Ability Score Bonus Selection:</label>
-                        <div class="flexInline">
-                            <template is="dom-repeat" items="[[abilityScoreBonus.options]]">
-                                <select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_abilityScoreBonusChoicesUpdated"
-                                    data-id$="[[index]]" data-value$="[[item.value]]"></select-multi>
-                            </template>
-                        </div>
-                    </div>
-                </template>
-            </template>
-        </div>
-        <div class="flexInline">
-            <stat-control class="strength" stat="Strength" value="{{_strength}}" modifier="{{_strengthModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                selected-skills="[[_allSkills]]" skills="[[_strengthSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Strength')]]"
-                bonus="[[_abilityScoreBonus.strength]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="dexterity" stat="Dexterity" value="{{_dexterity}}" modifier="{{_dexterityModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                selected-skills="[[_allSkills]]" skills="[[_dexteritySkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Dexterity')]]"
-                bonus="[[_abilityScoreBonus.dexterity]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="constitution" stat="Constitution" value="{{_constitution}}" modifier="{{_constitutionModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                selected-skills="[[_allSkills]]" skills="[[_constitutionSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Constitution')]]"
-                bonus="[[_abilityScoreBonus.constitution]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="intelligence" stat="Intelligence" value="{{_intelligence}}" modifier="{{_intelligenceModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                selected-skills="[[_allSkills]]" skills="[[_intelligenceSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Intelligence')]]"
-                bonus="[[_abilityScoreBonus.intelligence]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="wisdom" stat="Wisdom" value="{{_wisdom}}" modifier="{{_wisdomModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                selected-skills="[[_allSkills]]" skills="[[_wisdomSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]"
-                bonus="[[_abilityScoreBonus.wisdom]]" inherit-values="[[inheritValues]]"></stat-control>
-            <stat-control class="charisma" stat="Charisma" value="{{_charisma}}" modifier="{{_charismaModifier}}" proficiency-bonus="[[proficiencyBonus]]"
-                selected-skills="[[_allSkills]]" skills="[[_charismaSkills]]" saving-throw$="[[_collectionContains(savingThrows, 'Charisma')]]"
-                bonus="[[_abilityScoreBonus.charisma]]" inherit-values="[[inheritValues]]" checked-skills="{{_charismaSelectedSkills}}"></stat-control>
+            <stat-control class="strength" stat="Strength" value="{{strength}}" modifier="{{_strengthModifier}}"
+                proficiency-bonus="[[proficiencyBonus]]" selected-skills="{{selectedSkills}}" skills="[[_strengthSkills]]"
+                saving-throw$="[[_collectionContains(savingThrows, 'Strength')]]"></stat-control>
+            <stat-control class="dexterity" stat="Dexterity" value="{{dexterity}}" modifier="{{_dexterityModifier}}"
+                proficiency-bonus="[[proficiencyBonus]]" selected-skills="{{selectedSkills}}" skills="[[_dexteritySkills]]"
+                saving-throw$="[[_collectionContains(savingThrows, 'Dexterity')]]"></stat-control>
+            <stat-control class="constitution" stat="Constitution" value="{{constitution}}" modifier="{{_constitutionModifier}}"
+                proficiency-bonus="[[proficiencyBonus]]" selected-skills="{{selectedSkills}}" skills="[[_constitutionSkills]]"
+                saving-throw$="[[_collectionContains(savingThrows, 'Constitution')]]"></stat-control>
+            <stat-control class="intelligence" stat="Intelligence" value="{{intelligence}}" modifier="{{_intelligenceModifier}}"
+                proficiency-bonus="[[proficiencyBonus]]" selected-skills="{{selectedSkills}}" skills="[[_intelligenceSkills]]"
+                saving-throw$="[[_collectionContains(savingThrows, 'Intelligence')]]"></stat-control>
+            <stat-control class="wisdom" stat="Wisdom" value="{{wisdom}}" modifier="{{_wisdomModifier}}"
+                proficiency-bonus="[[proficiencyBonus]]" selected-skills="{{selectedSkills}}" skills="[[_wisdomSkills]]"
+                saving-throw$="[[_collectionContains(savingThrows, 'Wisdom')]]"></stat-control>
+            <stat-control class="charisma" stat="Charisma" value="{{charisma}}" modifier="{{_charismaModifier}}"
+                proficiency-bonus="[[proficiencyBonus]]" selected-skills="{{selectedSkills}}" skills="[[_charismaSkills]]"
+                saving-throw$="[[_collectionContains(savingThrows, 'Charisma')]]"></stat-control>
         </div>
     </template>
 
@@ -149,91 +127,105 @@
 
             static get properties() {
                 return {
-                    skillOptions: Array,
-                    abilityScoreBonus: Object,
+                    strength: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    dexterity: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    constitution: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    intelligence: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    wisdom: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    charisma: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    selectedSkills: {
+                        type: Array,
+                        value: [],
+                        notify: true
+                    },
+                    currentHitPoints: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    maxHitPoints: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
                     proficiencyBonus: {
                         type: Number,
-                        value: 0
+                        value: 0,
+                        notify: true
+                    },
+                    armourClass: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    initiative: {
+                        type: Number,
+                        value: 0,
+                        notify: true
+                    },
+                    speed: {
+                        type: Number,
+                        value: 0,
+                        notify: true
                     },
                     savingThrows: Array,
-                    hitDice: String,
+
+                    skillOptions: Array,
+                    abilityScoreBonus: Object,
                     speed: Number,
                     modifiers: {
                         type: Object,
                         computed: '_getModifiers(_strengthModifier, _dexterityModifier, _constitutionModifier, _intelligenceModifier, _wisdomModifier, _charismaModifier)',
                         notify: true
                     },
-                    stats: {
-                        type: Object,
-                        computed: '_getStats(_strength, _dexterity, _constitution, _intelligence, _wisdom, _charisma, _allSkills, _currentHitPoints, _maxHitPoints, proficiencyBonus, _armourClass, _initiative, speed)',
-                        notify: true
-                    },
-                    inheritValues: Boolean,
-                    _skillChoices: {
-                        type: Array,
-                        value: [],
-                        computed: '_getSkillChoices(skillOptions, inheritValues)'
-                    },
-                    _selectedSkills: {
-                        type: Array,
-                        value: []
-                    },
-                    _allSkills: {
-                        type: Array,
-                        value: [],
-                        computed: '_getAllSkills(skillOptions, _selectedSkills, _strengthSelectedSkills, _dexteritySelectedSkills, _constitutionSelectedSkills, _intelligenceSelectedSkills, _wisdomSelectedSkills, _charismaSelectedSkills)'
-                    },
-                    _abilityScoreBonus: {
-                        type: Object,
-                        computed: '_getAbilityScoreBonuses(abilityScoreBonus, _selectedAbilityScores, inheritValues)'
-                    },
-                    _selectedAbilityScores: {
-                        type: Array,
-                        value: []
-                    },
-                    _strength: Number,
+                    loadingFile: Boolean,
                     _strengthModifier: {
                         type: Number,
                         value: 0
                     },
-                    _strengthSelectedSkills: { type: Object, value: {} },
-                    _dexterity: Number,
                     _dexterityModifier: {
                         type: Number,
                         value: 0,
                         observer: '_updateInitiative'
                     },
-                    _dexteritySelectedSkills: { type: Object, value: {} },
-                    _constitution: Number,
                     _constitutionModifier: {
                         type: Number,
                         value: 0,
                         observer: '_updateHitPoints'
                     },
-                    _constitutionSelectedSkills: { type: Object, value: {} },
-                    _intelligence: Number,
                     _intelligenceModifier: {
                         type: Number,
                         value: 0
                     },
-                    _intelligenceSelectedSkills: { type: Object, value: {} },
-                    _wisdom: Number,
                     _wisdomModifier: {
                         type: Number,
                         value: 0
                     },
-                    _wisdomSelectedSkills: { type: Object, value: {} },
-                    _charisma: Number,
                     _charismaModifier: {
-                        type: Number,
-                        value: 0
-                    },
-                    _charismaSelectedSkills: { type: Object, value: {} },
-                    _armourClass: {
-                        type: Number,
-                        value: 0
-                    },
-                    _initiative: {
                         type: Number,
                         value: 0
                     },
@@ -283,76 +275,21 @@
                             "Performance",
                             "Persuasion"
                         ]
-                    },
-                    _currentHitPoints: {
-                        type: Number,
-                        value: 0
-                    },
-                    _maxHitPoints: {
-                        type: Number,
-                        value: 0
                     }
                 };
             }
 
-            _getSkillChoices(skillOptions, inheritValues) {
-                return !inheritValues ? [] : (skillOptions || []).filter((skill) => skill.choose);
-            }
-            _getAllSkills(skillOptions, selectedSkills, strengthSkills, dexteritySkills, constitutionSkills, intelligenceSkills, wisdomSkills, charismaSkills) {
-                return skillOptions.filter((skill) => !skill.choose)
-                    .concat(selectedSkills)
-                    .reduce((acc, val) => acc.concat(val), [])
-                    .concat(Object.keys(strengthSkills))
-                    .concat(Object.keys(dexteritySkills))
-                    .concat(Object.keys(constitutionSkills))
-                    .concat(Object.keys(intelligenceSkills))
-                    .concat(Object.keys(wisdomSkills))
-                    .concat(Object.keys(charismaSkills));
-            }
-            _setUp(dexModifier) {
-                this._initiative = dexModifier || 0;
-            }
-            _getHitPoints(hitDice, constitution) {
-                return (Number(hitDice && hitDice.split('d')[1]) || 0) + (constitution || 0);
-            }
-
-            _skillChoicesUpdated(e) {
-                this._selectedSkills[e.target.dataset.id] = e.detail.value;
-                //forces array property update rather than sub property
-                //parse(stringify) = copy object
-                this._selectedSkills = JSON.parse(JSON.stringify(this._selectedSkills));
-            }
-
-            _abilityScoreBonusChoicesUpdated(e) {
-                var value = [].concat(e.detail.value);
-
-                this._selectedAbilityScores[e.target.dataset.id] = {
-                    value: Number(e.target.dataset.value),
-                    abilities: JSON.parse(JSON.stringify(value))
-                };
-                this._selectedAbilityScores = JSON.parse(JSON.stringify(this._selectedAbilityScores));
-            }
-
-            _getAbilityScoreBonuses(abilityScoreBonus, selectedAbilityScores, inheritValues) {
-                var asb = JSON.parse(JSON.stringify(this.abilityScoreBonus));
-
-                (selectedAbilityScores || []).forEach(selected => {
-                    (selected.abilities || []).forEach(ability => {
-                        asb[ability] += Number(selected.value);
-                    });
-                });
-                return !inheritValues ? [] : asb;
-            }
-
             _updateHitPoints(conMod, oldConMod) {
+                if (this.loadingFile) return;
                 let diff = conMod - (oldConMod || 0);
-                this._maxHitPoints = Number(this._maxHitPoints) + diff;
-                this._currentHitPoints = Number(this._currentHitPoints) + diff;
+                this.maxHitPoints = Number(this.maxHitPoints) + diff;
+                this.currentHitPoints = Number(this.currentHitPoints) + diff;
             }
 
             _updateInitiative(dexMod, oldDexMod) {
+                if (this.loadingFile) return;
                 let diff = dexMod - (oldDexMod || 0);
-                this._initiative = Number(this._initiative) + diff;
+                this.initiative = Number(this.initiative) + diff;
             }
 
             _getModifiers(strengthModifier, dexterityModifier, constitutionModifier, intelligenceModifier, wisdomModifier, charismaModifier) {
@@ -365,27 +302,7 @@
                     charismaModifier,
                 }
             }
-            _getStats(strength, dexterity, constitution, intelligence, wisdom, charisma, skills, currentHitPoints, maxHitPoints, proficiencyBonus, armourClass, initiative, speed) {
-                return {
-                    strength,
-                    dexterity,
-                    constitution,
-                    intelligence,
-                    wisdom,
-                    charisma,
-                    skills,
-                    currentHitPoints,
-                    maxHitPoints,
-                    proficiencyBonus,
-                    armourClass,
-                    initiative,
-                    speed
-                }
-            }
 
-            _collectionDiff(c1, c2) {
-                return c1.filter(o => c2.indexOf(o) < 0);
-            }
             _collectionContains(collection, value) {
                 return (collection || []).includes(value);
             }

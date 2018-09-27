@@ -25,9 +25,11 @@
                 width: 80%;
                 text-align: center;
                 margin-top: -30%;
+
                 --paper-input-container-underline: {
                     display: none;
                 }
+
                 --paper-input-container-disabled: {
                     opacity: 1;
                 }
@@ -35,11 +37,7 @@
         </style>
 
         <div class="circle">
-            <paper-input class="mainStat" disabled$="[[readonly]]" required value="{{_value}}">
-                <template is="dom-if" if="[[bonus]]" restamp>
-                    <div slot="suffix">+[[bonus]]</div>
-                </template>
-            </paper-input>
+            <paper-input class="mainStat" disabled$="[[readonly]]" required value="{{value}}"></paper-input>
         </div>
     </template>
 
@@ -53,17 +51,12 @@
                 return {
                     value: {
                         type: Number,
-                        computed: '_getValue(_value, bonus)',
                         notify: true
                     },
                     modifier: {
                         type: Number,
-                        computed: '_getModifier(_modifiers, value, bonus)',
+                        computed: '_getModifier(_modifiers, value)',
                         notify: true
-                    },
-                    bonus: {
-                        type: Number,
-                        value: 0
                     },
                     readonly: {
                         type: Boolean,
@@ -98,12 +91,9 @@
                 };
             }
 
-            _getValue(value, bonus) {
-                return Number(value) || 0 + bonus;
-            }
-            _getModifier(modifiers, value, bonus) {
+            _getModifier(modifiers, value) {
                 if (value <= 0 || value > 30) return 0;
-                return modifiers[value + bonus - 1];
+                return modifiers[value - 1];
             }
         }
 

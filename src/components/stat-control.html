@@ -33,7 +33,7 @@
 			}
 		</style>
 
-		<main-stat bonus="[[bonus]]" modifier="{{modifier}}" value="{{value}}"></main-stat>
+		<main-stat modifier="{{modifier}}" value="{{value}}"></main-stat>
 		<div class="flexColumn">
 			<h2>[[stat]]</h2>
 			<skill-control name="Ability Modifier" modifier="[[modifier]]" required></skill-control>
@@ -41,7 +41,7 @@
 				<skill-control name="Saving Throw" proficiency-bonus="[[proficiencyBonus]]" modifier="[[modifier]]" required></skill-control>
 			</template>
 			<template is="dom-repeat" items="[[skills]]">
-				<skill-control name="[[item]]" disabled$="[[inheritValues]]" checked$="[[_isChecked(selectedSkills, item)]]" proficiency-bonus="[[proficiencyBonus]]"
+				<skill-control name="[[item]]" checked$="[[_isChecked(selectedSkills, item)]]" proficiency-bonus="[[proficiencyBonus]]"
 				 modifier="[[modifier]]" on-checked-changed="_selectSkills"></skill-control>
 			</template>
 		</div>
@@ -61,7 +61,6 @@
 						value: 0,
 						notify: true
 					},
-					bonus: Number,
 					modifier: {
 						type: Number,
 						notify: true
@@ -73,27 +72,26 @@
 						reflectToAttribute: true
 					},
 					skills: Array,
-					selectedSkills: Array,
-					inheritValues: Boolean,
-					checkedSkills: {
-						type: Object,
+					selectedSkills: {
+						type: Array,
 						notify: true
 					}
 				};
 			}
 
 			_isChecked(skills, skill) {
-				return skills.includes(skill);
+				return (skills || []).includes(skill);
 			}
 
 			_selectSkills(e) {
-				let skills = JSON.parse(JSON.stringify(this.checkedSkills || {}));
+				let skills = JSON.parse(JSON.stringify(this.selectedSkills || []));
+				let skillIndex = skills.indexOf(e.target.name);
 				if (e.detail.value) {
-					skills[e.target.name] = 1;
+					if (skillIndex < 0) skills.push(e.target.name);
 				} else {
-					delete skills[e.target.name];
+					if (skillIndex >= 0) skills.splice(skillIndex, 1);
 				}
-				this.checkedSkills = skills;
+				this.selectedSkills = skills;
 			}
 		}
 

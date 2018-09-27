@@ -22,17 +22,17 @@
 		</style>
 		<div>
 			<paper-dropdown label="Feat" value="{{_selectedFeatValue}}" searchable="true">
-				<template is="dom-repeat" items="[[_getAvailableFeats(feats, _selectedFeats)]]">
-					<paper-item value$="[[item]]">[[item.displayName]]</paper-item>
+				<template is="dom-repeat" items="[[_getAvailableFeats(feats, selectedFeats)]]">
+					<paper-item value$="[[item.name]]">[[item.displayName]]</paper-item>
 				</template>
 			</paper-dropdown>
 			<paper-icon-button icon="add" title="Add Feat" on-tap="_addFeat"></paper-icon-button>
 		</div>
 
-		<template is="dom-repeat" items="[[_selectedFeats]]">
+		<template is="dom-repeat" items="[[_getDisplayableFeats(feats, selectedFeats)]]">
 			<card-wrapper class="subcard" title="[[item.displayName]]">
 				<paper-button data-item$="[[item]]" on-tap="_removeItem" slot="actionIcon">
-					<iron-icon icon="clear"></iron-icon>Remove
+					<iron-icon data-item$="[[item]]" icon="clear"></iron-icon>Remove
 				</paper-button>
 				<display-description description="[[item.description]]"></display-description>
 			</card-wrapper>
@@ -48,56 +48,39 @@
 			static get properties() {
 				return {
 					feats: Object,
-					selectedFeatNames: {
-						type: Array,
-						notify: true
-					},
-					loadingFile: Boolean,
-					_selectedFeatValue: Object,
-					_selectedFeats: {
+					selectedFeats: {
 						type: Array,
 						value: [],
-						observer: '_updateSelectedFeatNames'
-					}
+						notify: true
+					},
+					_selectedFeatValue: Object
 				};
-			}
-
-			static get observers() {
-				return [
-					'_loadFeats(feats, selectedFeatNames, loadingFile)',
-				];
 			}
 
 			_addFeat() {
 				if (!this._selectedFeatValue) return;
 
-				this._selectedFeats = this._selectedFeats
-					.concat(JSON.parse(this._selectedFeatValue));
+				this.selectedFeats = this.selectedFeats.concat(this._selectedFeatValue);
 				this._selectedFeatValue = null;
 			}
 
 			_getAvailableFeats(feats, selectedFeats) {
 				let featsToReview = Object.keys(feats || {}).map((feat) => feats[feat]);
-				let featsSelected = (selectedFeats || []).map(feat => feat.name);
+				let featsSelected = (selectedFeats || []);
 
 				let featsToShow = featsToReview.filter(feat => !featsSelected.includes(feat.name));
 				return featsToShow;
 			}
 
-			_updateSelectedFeatNames(feats) {
-				if (this.loadingFile) return;
-				this.selectedFeatNames = feats.map(feat => feat.name);
-			}
-			_loadFeats(feats, selectedFeats, loading) {
-				if (!loading) return;
-				this._selectedFeats = selectedFeats.map(feat => feats[feat]);
+			_getDisplayableFeats(feats, selectedFeats) {
+				return selectedFeats.map(feat => feats[feat]);
 			}
 
 			_removeItem(e) {
 				let featToRemove = JSON.parse(e.target.dataset.item);
-				let index = this._selectedFeats.findIndex(feat => feat.name === featToRemove.name);
-				this._selectedFeats.splice(index, 1);
-				this._selectedFeats = JSON.parse(JSON.stringify(this._selectedFeats));
+				let index = this.selectedFeats.findIndex(feat => feat === featToRemove.name);
+				this.selectedFeats.splice(index, 1);
+				this.selectedFeats = JSON.parse(JSON.stringify(this.selectedFeats));
 			}
 		}
 

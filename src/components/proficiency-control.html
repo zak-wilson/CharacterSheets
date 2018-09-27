@@ -8,24 +8,9 @@
 <dom-module id="proficiency-control">
 	<template>
 		<style>
-			paper-listbox {
-				--paper-item-min-height: 0px;
-			}
-
-			.flexInline {
-				display: flex;
-			}
 		</style>
 
 		<h4>[[type]]</h4>
-		<template is="dom-if" if="[[inheritValues]]">
-			<div class="flexInline">
-				<template is="dom-repeat" items="[[_choices]]">
-					<select-multi choose="[[item.choose]]" options="[[item.options]]" on-selected-values-changed="_choicesUpdated"
-					 data-id$="[[index]]"></select-multi>
-				</template>
-			</div>
-		</template>
 		<paper-textarea value="{{value}}"></paper-textarea>
 
 	</template>
@@ -39,53 +24,12 @@
 			static get properties() {
 				return {
 					type: String,
-					options: Array,
-					inheritValues: Boolean,
-					_choices: {
-						type: Array,
-						computed: '_getChoices(options)'
-					},
-					_selectedChoices: {
-						type: Array,
-						value: []
-					},
-					_allProficiencies: {
-						type: Array,
-						computed: '_getAllProficiencies(options, _selectedChoices, inheritValues)'
-					},
 					value: {
 						type: String,
 						value: '',
 						notify: true
 					}
 				};
-			}
-
-			_getChoices(options) {
-				return options.filter(o => o.choose);
-			}
-			_getAllProficiencies(options, selectedChoices, inheritValues) {
-				var statics = options.filter(o => !o.choose).concat(options.filter(o => o.choose).map(o => o.static || []).reduce(this._combineArrays, []));
-				var choices = selectedChoices.reduce(this._combineArrays, []);
-				if (!this.value) {
-					var orOptions = inheritValues ? [] : options.filter(o => o.choose).map(o => `Pick ${o.choose} of [${this._getCsv(o.options || [])}]`);
-					this.value = this._getCsv([...new Set(statics.concat(orOptions).concat(choices))]);
-				}
-				return [...new Set(statics.concat(choices))];
-			}
-
-			_choicesUpdated(e) {
-				this._selectedChoices[e.target.dataset.id] = e.detail.value;
-				//forces array property update rather than sub property
-				//parse(stringify) = copy object
-				this._selectedChoices = JSON.parse(JSON.stringify(this._selectedChoices));
-			}
-
-			_getCsv(values) {
-				return values.join(', ');
-			}
-			_combineArrays(accumulator, value) {
-				return accumulator.concat(value);
 			}
 		}
 

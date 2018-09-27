@@ -1,11 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-dropdown/paper-dropdown.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../components/card-wrapper.html">
 <link rel="import" href="../components/proficiency-control.html">
 <link rel="import" href="../components/display-description.html">
@@ -56,13 +57,27 @@
 			}
 
 			paper-fab {
-				visibility: hidden;
+				/* visibility: hidden; */
 				--paper-fab-background: #4285f4;
 			}
 		</style>
 
+		<iron-ajax id="getCharacters" auto url="http://localhost:44443/" on-response="_characterResponse"></iron-ajax>
+		<iron-ajax id="getCharacter" auto url="http://localhost:44443/[[_encodeName(_selectedCharacter)]]" on-response="_characterResponse"></iron-ajax>
+		<iron-ajax id="saveCharacter" url="http://localhost:44443/" body="[[_stringify(_character)]]" content-type="application/json" method="POST"></iron-ajax>
+
 		<card-wrapper title="Basic Info" opened>
 			<div class="flexInline">
+				<div class="flexSpaceBetween">
+					<paper-dropdown label="Load Character" value="{{_selectedCharacter}}">
+						<template is="dom-repeat" items="[[_characters]]">
+							<paper-item>[[item]]</paper-item>
+						</template>
+					</paper-dropdown>
+					<template is="dom-if" if="[[_canLevelUp(_level)]]">
+						<paper-icon-button icon="save" on-tap="_save"></paper-icon-button>
+					</template>
+				</div>
 				<paper-input label="Name" value="{{_name}}"></paper-input>
 				<div class="flexSpaceBetween">
 					<paper-dropdown label="Class" value="{{_selectedClassValue}}">
@@ -95,29 +110,27 @@
 			</div>
 		</card-wrapper>
 		<card-wrapper title="Stats">
-			<stat-page skill-options="[[_all.skills]]" ability-score-bonus="[[_all.abilityScoreBonus]]" proficiency-bonus="[[_all.proficiencyBonus]]"
-			 saving-throws="[[_all.savingThrows]]" hit-dice="[[_all.hitDice]]" speed="[[_all.speed]]" modifiers="{{_statModifiers}}"
-			 inherit-values="[[_inheritValues]]" stats="{{_stats}}"></stat-page>
+			<stat-page strength="{{_stats.strength}}" dexterity="{{_stats.dexterity}}" constitution="{{_stats.constitution}}"
+			 intelligence="{{_stats.intelligence}}" wisdom="{{_stats.wisdom}}" charisma="{{_stats.charisma}}" selected-skills="{{_stats.skills}}"
+			 current-hit-points="{{_stats.currentHitPoints}}" max-hit-points="{{_stats.maxHitPoints}}" proficiency-bonus="{{_stats.proficiencyBonus}}"
+			 armour-class="{{_stats.armourClass}}" initiative="{{_stats.initiative}}" speed="{{_stats.speed}}" saving-throws="[[_stats.savingThrows]]"
+			 modifiers="{{_statModifiers}}" loading-file="[[_loadingFile]]"></stat-page>
 		</card-wrapper>
 		<card-wrapper title="Proficiencies">
-			<proficiency-control type="Weapon" options="[[_all.proficiencies.weapon]]" value="{{_weaponProficiencies}}"
-			 inherit-values="[[_inheritValues]]"></proficiency-control>
-			<proficiency-control type="Armour" options="[[_all.proficiencies.armour]]" value="{{_armourProficiencies}}"
-			 inherit-values="[[_inheritValues]]"></proficiency-control>
-			<proficiency-control type="Tool" options="[[_all.proficiencies.tool]]" value="{{_toolProficiencies}}" inherit-values="[[_inheritValues]]"></proficiency-control>
-			<proficiency-control type="Language" options="[[_all.proficiencies.language]]" value="{{_languageProficiencies}}"
-			 inherit-values="[[_inheritValues]]"></proficiency-control>
+			<proficiency-control type="Weapon" value="{{_proficiencies.weapon}}"></proficiency-control>
+			<proficiency-control type="Armour" value="{{_proficiencies.armour}}"></proficiency-control>
+			<proficiency-control type="Tool" value="{{_proficiencies.tool}}"></proficiency-control>
+			<proficiency-control type="Language" value="{{_proficiencies.language}}"></proficiency-control>
 		</card-wrapper>
 		<card-wrapper title="Spells">
-			<spells-page spells="[[_spells]]" class-name="[[_selectedClass.name]]" spell-save-difficulty-class="[[_all.spellSaveDifficultyClass]]"
-			 spell-attack-modifier="[[_all.spellAttackModifier]]" spell-slots="[[_all.spellSlots]]" spells-known="[[_all.spellsKnown]]"
-			 cantrips-known="[[_all.cantripsKnown]]" selected-spell-names="{{_selectedSpellNames}}" loading-file="[[_loadingFile]]"></spells-page>
+			<spells-page spells="[[_spells]]" class-name="[[_selectedClass.name]]" spell-save-difficulty-class="[[_spellSaveDifficultyClass]]"
+			 spell-attack-modifier="[[_spellAttackModifier]]" selected-spells="{{_selectedSpells}}" loading-file="[[_loadingFile]]"></spells-page>
 		</card-wrapper>
 		<card-wrapper title="Feats">
-			<feats-page feats="[[_feats]]" selected-feat-names="{{_selectedFeatNames}}" loading-file="[[_loadingFile]]"></feats-page>
+			<feats-page feats="[[_feats]]" selected-feats="{{_selectedFeats}}"></feats-page>
 		</card-wrapper>
 		<card-wrapper title="Traits">
-			<template is="dom-repeat" items="[[_all.traits]]">
+			<template is="dom-repeat" items="[[_traitsSelected]]">
 				<card-wrapper class="subcard" title="[[item]]">
 					<display-description description="[[_getTraitDescription(_traits, item)]]"></display-description>
 				</card-wrapper>
@@ -139,11 +152,6 @@
 		<card-wrapper title="Other">
 			<paper-textarea value="{{_other}}"></paper-textarea>
 		</card-wrapper>
-		<div class="flexInline">
-			<paper-fab icon="cloud-download" on-tap="_save"></paper-fab>
-			<paper-fab icon="cloud-upload" on-tap="_load"></paper-fab>
-			<input id="characterUploader" type="file" on-change="_loadedFile" hidden />
-		</div>
 	</template>
 
 	<script>
@@ -170,57 +178,94 @@
 					},
 					_selectedRace: {
 						type: Object,
-						value: () => { return {}; }
+						value: {},
+						observer: '_selectedRaceChanged'
 					},
 					_selectedRaceValue: {
 						type: String,
-						observer: '_selectedRaceChanged'
+						observer: '_selectedRaceValueChanged'
 					},
 					_selectedSubrace: {
 						type: Object,
-						value: () => { return {}; }
+						value: {},
+						observer: '_selectedSubraceChanged'
 					},
 					_selectedSubraceValue: {
 						type: String,
-						observer: '_selectedSubraceChanged'
+						observer: '_selectedSubraceValueChanged'
 					},
 					_classes: Array,
 					_selectedClass: {
 						type: Object,
-						value: () => { return {}; }
+						value: {},
+						observer: '_selectedClassChanged'
 					},
 					_selectedClassValue: {
 						type: String,
-						observer: '_selectedClassChanged'
+						observer: '_selectedClassValueChanged'
 					},
 					_backgrounds: Array,
 					_selectedBackground: {
 						type: Object,
-						value: () => { return {}; }
+						value: {},
+						observer: '_selectedBackgroundChanged'
 					},
 					_selectedBackgroundValue: {
 						type: String,
-						observer: '_selectedBackgroundChanged'
+						observer: '_selectedBackgroundValueChanged'
 					},
 					_statModifiers: {
 						type: Object,
-						value: () => { return {} }
-					},
-					_all: {
-						type: Object,
-						computed: '_getAll(_selectedClass, _selectedRace, _selectedSubrace, _selectedBackground, _level, _statModifiers, _loadingFile)'
+						value: {}
 					},
 					_inheritValues: {
 						type: Boolean,
 						value: false
 					},
-					_stats: Object,
-					_weaponProficiencies: String,
-					_armourProficiencies: String,
-					_toolProficiencies: String,
-					_languageProficiencies: String,
-					_selectedSpellNames: Array,
-					_selectedFeatNames: Array,
+					_characters: {
+						type: Array,
+						value: []
+					},
+					_selectedCharacter: String,
+					_character: {
+						type: Object,
+						observer: '_loadedCharacter'
+					},
+					_stats: {
+						type: Object,
+						value: {
+							strength: 0,
+							dexterity: 0,
+							constitution: 0,
+							intelligence: 0,
+							wisdom: 0,
+							charisma: 0,
+							skills: [],
+							currentHitPoints: 0,
+							maxHitPoints: 0,
+							proficiencyBonus: 0,
+							armourClass: 0,
+							initiative: 0,
+							speed: 0
+						}
+					},
+					_proficiencies: {
+						type: Object,
+						value: {}
+					},
+					_selectedSpells: Array,
+					_traitsSelected: Array,
+					_spellSaveDifficultyClass: {
+						type: Number,
+						computed: '_getSpellSaveDifficultyClass(_selectedClass.spellSaveDifficultyClass, _stats.proficiencyBonus, _statModifiers)'
+					},
+					_spellAttackModifier: {
+						type: Number,
+						computed: '_getSpellAttackModifier(_selectedClass.spellAttackModifier, _stats.proficiencyBonus, _statModifiers)'
+					},
+					_spellSaveDifficultyClassString: String,
+					_spellAttackModifierString: String,
+					_selectedFeats: Array,
 					_items: String,
 					_cp: String,
 					_sp: String,
@@ -246,7 +291,7 @@
 				this._fileLoader('src/data/feats.json', (data) => this._feats = data);
 			}
 
-			_selectedRaceChanged(race) {
+			_selectedRaceValueChanged(race) {
 				this._selectedSubraceValue = null;
 				if (!race) {
 					this._selectedRace = null;
@@ -256,7 +301,7 @@
 				this._subraces = this._races[race].Subraces || null;
 				this._fileLoader('src/data/races/' + race + '.json', (data) => this._selectedRace = data);
 			}
-			_selectedSubraceChanged(subrace) {
+			_selectedSubraceValueChanged(subrace) {
 				if (!subrace) {
 					this._selectedSubrace = null;
 					return;
@@ -264,7 +309,7 @@
 
 				this._fileLoader('src/data/races/' + this._selectedRaceValue + '/' + subrace + '.json', (data) => this._selectedSubrace = data);
 			}
-			_selectedClassChanged(selectedClass) {
+			_selectedClassValueChanged(selectedClass) {
 				if (!selectedClass) {
 					this._selectedClass = null;
 					return;
@@ -275,7 +320,7 @@
 					this._selectedClass = data
 				});
 			}
-			_selectedBackgroundChanged(selectedBackground) {
+			_selectedBackgroundValueChanged(selectedBackground) {
 				if (!selectedBackground) {
 					this._selectedBackground = null;
 					return;
@@ -299,65 +344,28 @@
 				return level < 20;
 			}
 
-			_getAll(selectedClass, selectedRace, selectedSubrace, selectedBackground, level, statModifiers, loadingFile) {
-				var sc = selectedClass || {};
-				var sr = selectedRace || {};
-				var ssr = selectedSubrace || {};
-				var sb = selectedBackground || {};
-				var scl = (sc.levels || []).slice(0, Number(level) || 1) || [];
-				var all = [sc, sr, ssr, sb].concat(scl);
-
-				var proficiencyBonus = all.map((o) => o.proficiencyBonus || 0).reduce(this._sum, 0);
-				let spellSaveDifficultyClass = this._processStatString(sc.spellSaveDifficultyClass, statModifiers, proficiencyBonus, level);
-				let spellAttackModifier = this._processStatString(sc.spellAttackModifier, statModifiers, proficiencyBonus, level);
-				let spellsKnown = this._processStatString(sc.spellsKnown || scl.map(l => l.spellsKnown).reduce(this._sum, 0), statModifiers, proficiencyBonus, level);
-				let allObj = {
-					abilityScoreBonus: all.map((o) => o.abilityScoreBonus || {}).reduce((acc, val) => {
-						return {
-							strength: acc.strength + (val.strength || 0),
-							dexterity: acc.dexterity + (val.dexterity || 0),
-							constitution: acc.constitution + (val.constitution || 0),
-							intelligence: acc.intelligence + (val.intelligence || 0),
-							wisdom: acc.wisdom + (val.wisdom || 0),
-							charisma: acc.charisma + (val.charisma || 0),
-							options: acc.options.concat(val.options || [])
-						}
-					}, { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0, options: [] }),
-					cantripsKnown: all.map((o) => o.cantripsKnown || 0).reduce(this._sum, 0),
-					equipment: all.map((o) => o.equipment || []).reduce(this._collectionCombiner, []).join('\n'),
-					hitDice: sc.hitDice || '',
-					hitPoints: all.map((o) => o.hitPoints || 0).reduce(this._sum, 0),
-					proficiencies: all.map((o) => o.proficiencies || {}).reduce((acc, val) => {
-						return {
-							weapon: acc.weapon.concat(val.weapon || []),
-							armour: acc.armour.concat(val.armour || []),
-							tool: acc.tool.concat(val.tool || []),
-							language: acc.language.concat(val.language || [])
-						}
-					}, { weapon: [], armour: [], tool: [], language: [] }),
-					proficiencyBonus: proficiencyBonus,
-					savingThrows: all.map((o) => o.savingThrows || []).reduce(this._collectionCombiner, []),
-					skills: all.map((o) => o.skills || []).reduce(this._collectionCombiner, []),
-					speed: all.map((o) => o.speed || 0).reduce(this._sum, 0),
-					spellAttackModifier: spellAttackModifier,
-					spellSaveDifficultyClass: spellSaveDifficultyClass,
-					spellsKnown: spellsKnown,
-					spellSlots: all.map((o) => o.spellSlots || []).reduce((acc, val) => {
-						val.forEach((o, index) => {
-							acc[index] = (acc[index] || 0) + o;
-						});
-						return acc;
-					}, []),
-					traits: all.map((o) => o.traits || []).reduce(this._collectionCombiner, []),
-				};
-
-				if (!loadingFile) {
-					this._equipment = allObj.equipment;
-				}
-
-				return allObj;
+			_selectedRaceChanged(newRace, oldRace) {
+				this._updateStats(newRace, oldRace);
+			}
+			_selectedSubraceChanged(newSubrace, oldSubrace) {
+				this._updateStats(newSubrace, oldSubrace);
+			}
+			_selectedClassChanged(newClass, oldClass) {
+				this._updateStats(newClass, oldClass);
+			}
+			_selectedBackgroundChanged(newBackground, oldBackground) {
+				this._updateStats(newBackground, oldBackground);
+			}
+			_updateStats(newValue, oldValue) {
+				this._traitsSelected = this._switchArrayValues(this._traitsSelected || [], newValue && newValue.traits || [], oldValue && oldValue.traits || []);
 			}
 
+			_getSpellAttackModifier(spellAttackModifierString, proficiencyBonus, statModifiers) {
+				return this._processStatString(spellAttackModifierString, statModifiers, proficiencyBonus);
+			}
+			_getSpellSaveDifficultyClass(spellSaveDifficultyClassString, proficiencyBonus, statModifiers) {
+				return this._processStatString(spellSaveDifficultyClassString, statModifiers, proficiencyBonus);
+			}
 			_processStatString(value, statModifiers, proficiencyBonus, level) {
 				if (!value) return 0;
 				if (typeof (value) === 'number') return value;
@@ -384,22 +392,17 @@
 			}
 
 			_save() {
-				return {
+				this._character = {
 					name: this._name,
 					class: this._selectedClassValue,
 					level: this._level,
 					background: this._selectedBackgroundValue,
 					race: this._selectedRaceValue,
 					subrace: this._selectedSubraceValue,
-					stats: this._outputStats,
-					proficiencies: {
-						weapon: this._weaponProficiencies,
-						armour: this._armourProficiencies,
-						tool: this._toolProficiencies,
-						language: this._languageProficiencies
-					},
-					spells: this._selectedSpellNames,
-					feats: this._selectedFeatNames,
+					stats: this._stats,
+					proficiencies: this._proficiencies,
+					spells: this._selectedSpells,
+					feats: this._selectedFeats,
 					item: this._items,
 					equipment: this._equipment,
 					cp: this._cp,
@@ -408,45 +411,66 @@
 					gp: this._gp,
 					pp: this._pp,
 					other: this._other
-				}
+				};
+				this.$.saveCharacter.generateRequest();
 			}
 
 			_load() {
 				this.$.characterUploader.click();
 			}
 
-			_loadedFile(e) {
-				let file = e.target.files[0];
-				let fr = new FileReader();
-				fr.onload = (ev) => {
-					this._loadingFile = true;
-					let result = JSON.parse(ev.target.result);
-					this._name = result.name;
-					this._selectedClassValue = result.class;
-					this._level = result.level;
-					this._selectedBackgroundValue = result.background;
-					this._selectedRaceValue = result.race;
-					this._selectedSubraceValue = result.subrace;
-					this._outputStats = result.stats;
-					this._weaponProficiencies = result.proficiencies.weapon;
-					this._armourProficiencies = result.proficiencies.armour;
-					this._toolProficiencies = result.proficiencies.tool;
-					this._languageProficiencies = result.proficiencies.language;
-					this._selectedSpellNames = result.spells;
-					this._selectedFeatNames = result.feats;
-					this._items = result.item;
-					this._equipment = result.equipment;
-					this._cp = result.cp;
-					this._sp = result.sp;
-					this._ep = result.ep;
-					this._gp = result.gp;
-					this._pp = result.pp;
-					this._other = result.other;
-					this._loadingFile = false;
-				};
-				fr.readAsText(file);
+			_encodeName(name) {
+				return encodeURI(name);
 			}
 
+			_characterResponse(e) {
+				if (!e.target.lastResponse) return;
+
+				switch (e.target.id) {
+					case 'getCharacters':
+						this._characters = e.target.lastResponse;
+						break;
+					case 'getCharacter':
+						this._character = e.target.lastResponse;
+						break;
+				}
+			}
+
+			_loadedCharacter(result) {
+				this._loadingFile = true;
+				this._name = result.name;
+				this._selectedClassValue = result.class;
+				this._level = result.level;
+				this._selectedBackgroundValue = result.background;
+				this._selectedRaceValue = result.race;
+				this._selectedSubraceValue = result.subrace;
+				this._stats = result.stats;
+				this._proficiencies = result.proficiencies;
+				this._selectedSpells = result.spells;
+				this._selectedFeats = result.feats;
+				this._items = result.item;
+				this._equipment = result.equipment;
+				this._cp = result.cp;
+				this._sp = result.sp;
+				this._ep = result.ep;
+				this._gp = result.gp;
+				this._pp = result.pp;
+				this._other = result.other;
+				this._loadingFile = false;
+			}
+
+
+			_switchArrayValues(values, newValue, oldValue) {
+				if (oldValue && Array.isArray(oldValue)) {
+					for (let value of oldValue) {
+						let i = values.indexOf(value);
+						if (i >= 0) values.splice(i, 1);
+					}
+				}
+				if (newValue && Array.isArray(newValue))
+					values = values.concat(newValue);
+				return values;
+			}
 			_sum(accumulator, value) {
 				return accumulator + value;
 			}
@@ -462,6 +486,7 @@
 			_fileLoader(file, propToSet) {
 				fetch(file).then((data) => data.json()).then(propToSet.bind(this));
 			}
+			_stringify(value) { return JSON.stringify(value); }
 		}
 
 		window.customElements.define(CharacterSheetCreator.is, CharacterSheetCreator);

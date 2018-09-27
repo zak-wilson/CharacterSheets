@@ -11,17 +11,6 @@
 <dom-module id="spells-page">
 	<template>
 		<style>
-			.flexColumn {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				margin: 8px;
-
-				--paper-font-caption: {
-					line-height: 0;
-				}
-			}
-
 			.flex {
 				display: flex;
 				align-items: center;
@@ -50,26 +39,13 @@
 				<span>[[spellAttackModifier]]</span>
 			</div>
 		</template>
-		<template is="dom-if" if="[[cantripsKnown]]">
-			<div>
-				<label>Number of Known Cantrips:</label>
-				<span>[[cantripsKnown]]</span>
-			</div>
-		</template>
-		<template is="dom-if" if="[[spellsKnown]]">
-			<div>
-				<label>Number of Known Spells:</label>
-				<span>[[spellsKnown]]</span>
-			</div>
-		</template>
 		<div>
-			<paper-dropdown disabled$="[[!_canAddMore]]" label="Spell" value="{{_selectedSpellValue}}" searchable
-			 horizontal-align='left'>
-				<template is="dom-repeat" items="[[_getAvailableSpells(spells, _selectedSpells, _canAddMoreCantrips, _canAddMoreSpells, spellSlots, _filterByClass, className, _filterBySpellLevel, _override)]]">
-					<paper-item value$="[[item]]">[[item.displayName]]</paper-item>
+			<paper-dropdown label="Spell" value="{{_selectedSpellValue}}" searchable horizontal-align='left'>
+				<template is="dom-repeat" items="[[_getAvailableSpells(spells, selectedSpells, _filterByClass, className, _filterBySpellLevel)]]">
+					<paper-item value$="[[item.name]]">[[item.displayName]]</paper-item>
 				</template>
 			</paper-dropdown>
-			<paper-icon-button disabled$="[[!_canAddMore]]" icon="add" title="Add Spell to Character" on-tap="_addSpell"></paper-icon-button>
+			<paper-icon-button icon="add" title="Add Spell to Character" on-tap="_addSpell"></paper-icon-button>
 			<paper-checkbox class="spellFilter" checked="{{_filterByClass}}">Filter By Class</paper-checkbox>
 			<paper-dropdown class="spellFilter" label="Filter by Spell Level" value="{{_filterBySpellLevel}}" horizontal-align='right'
 			 multi>
@@ -88,14 +64,6 @@
 
 		<template is="dom-repeat" items="[[_spellsToDisplay]]">
 			<card-wrapper class="subcard" title="[[item.level]]">
-				<template is="dom-if" if="[[item.slots]]">
-					<div class="flex">
-						Slots Available:
-						<template is="dom-repeat" items="[[item.slots]]">
-							<paper-checkbox checked="true"></paper-checkbox>
-						</template>
-					</div>
-				</template>
 				<template is="dom-repeat" items="[[item.spells]]" as="spell">
 					<spell-card-control spell="[[spell]]" on-remove-spell-card="_removeSpellCard"></spell-card-control>
 				</template>
@@ -118,27 +86,12 @@
 					spellSlots: Array,
 					spellsKnown: Number,
 					cantripsKnown: Number,
-					selectedSpellNames: {
+					selectedSpells: {
 						type: Array,
+						value: [],
 						notify: true
 					},
 					loadingFile: Boolean,
-					_spellSlots: {
-						type: Array,
-						computed: '_getSpellSlots(spellSlots, cantripsKnown, _override)'
-					},
-					_canAddMore: {
-						type: Boolean,
-						computed: '_getCanAddMore(_canAddMoreCantrips, _canAddMoreSpells, _override)'
-					},
-					_canAddMoreCantrips: {
-						type: Boolean,
-						computed: '_getCanAddMoreCantrips(cantripsKnown, _selectedSpells)'
-					},
-					_canAddMoreSpells: {
-						type: Boolean,
-						computed: '_getCanAddMoreSpells(spellsKnown, _selectedSpells)'
-					},
 					_filterByClass: {
 						type: Boolean,
 						value: true
@@ -148,51 +101,25 @@
 						value: []
 					},
 					_selectedSpellValue: Object,
-					_selectedSpells: {
-						type: Array,
-						value: [],
-						observer: '_updateSelectedSpellNames'
-					},
-					_override: {
-						type: Boolean,
-						value: true
-					},
 					_spellsToDisplay: {
 						type: Array,
-						computed: '_getSpellsToDisplay(_selectedSpells, _spellSlots)'
+						computed: '_getSpellsToDisplay(spells, selectedSpells)'
 					}
 				};
-			}
-
-			static get observers() {
-				return [
-					'_loadSpells(spells, selectedSpellNames, loadingFile)',
-				];
-			}
-
-			_updateSelectedSpellNames(selectedSpells) {
-				if (this.loadingFile) return;
-				this.selectedSpellNames = selectedSpells.map(spell => spell.name);
-			}
-
-			_loadSpells(spells, selectedSpells, loading) {
-				if (!loading) return;
-				this._selectedSpells = selectedSpells.map(feat => spells[feat]);
 			}
 
 			_addSpell() {
 				if (!this._selectedSpellValue) return;
 
-				this._selectedSpells = this._selectedSpells
-					.concat(JSON.parse(this._selectedSpellValue));
+				this.selectedSpells = this.selectedSpells.concat(this._selectedSpellValue);
 				this._selectedSpellValue = null;
 			}
 
-			_getAvailableSpells(spells, selectedSpells, canAddMoreCantrips, canAddMoreSpells, spellSlots, filterByClass, className, filterBySpellLevel, override) {
+			_getAvailableSpells(spells, selectedSpells, filterByClass, className, filterBySpellLevel) {
 				let spellsToReview = Object.keys(spells || {}).map((spell) => spells[spell]);
-				let spellsSelected = (selectedSpells || []).map(spell => spell.name);
+				let spellsSelected = (selectedSpells || []);
 
-				let spellsToShow = spellsToReview.filter(spell => (canAddMoreCantrips && !spell.restrictions.level) || (canAddMoreSpells && spell.restrictions.level && spellSlots[Number(spell.restrictions.level[0])]) || override);
+				let spellsToShow = spellsToReview.filter(spell => !spell.restrictions.level || spell.restrictions.level);
 				if (filterByClass) {
 					spellsToShow = spellsToShow.filter(spell => (spell.restrictions.classes || []).includes(className));
 				}
@@ -205,8 +132,9 @@
 				return spellsToShow;
 			}
 
-			_getSpellsToDisplay(selectedSpells, spellSlots, override) {
-				let groupedSpells = selectedSpells.reduce((grouped, spell) => {
+			_getSpellsToDisplay(spells, selectedSpells) {
+				let groupedSpells = (selectedSpells || []).reduce((grouped, selectedSpell) => {
+					let spell = spells[selectedSpell];
 					let level = Number((spell.restrictions.level || '0')[0]);
 					grouped[level] = grouped[level] || [];
 					grouped[level].push(spell);
@@ -214,34 +142,13 @@
 				}, {});
 
 				let groupedLevels = Object.keys(groupedSpells);
-				return groupedLevels.map((level) => { return { spells: groupedSpells[level], slots: spellSlots[level] || 0, level: this._getSpellLevelName(Number(level)) }; });
-			}
-			_getSpellSlots(spellSlots, cantripsKnown, override) {
-				if (override) return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-				if (!cantripsKnown) return [];
-				spellSlots.splice(0, 0, 0);
-				return spellSlots;
-			}
-			_getSpellsAtLevel(spells, level) {
-				return spells.filter(spell => Number((spell.restrictions.level || '0')[0]) === level);
+				return groupedLevels.map((level) => { return { spells: groupedSpells[level], level: this._getSpellLevelName(Number(level)) }; });
 			}
 			_getSpellLevelName(level) {
 				if (!level) return 'Cantrips';
 				var s = ["th", "st", "nd", "rd"],
 					v = level % 100;
 				return level + (s[(v - 20) % 10] || s[v] || s[0]) + '-level';
-			}
-
-			_getCanAddMore(canAddMoreCantrips, canAddMoreSpells, override) {
-				return canAddMoreCantrips || canAddMoreSpells || override;
-			}
-			_getCanAddMoreCantrips(cantripsKnown, selectedSpells) {
-				let cantrips = selectedSpells.filter(spell => !spell.restrictions.level);
-				return cantripsKnown > cantrips.length;
-			}
-			_getCanAddMoreSpells(spellsKnown, selectedSpells) {
-				let spells = selectedSpells.filter(spell => spell.restrictions.level);
-				return spellsKnown > spells.length;
 			}
 
 			_sortSpells(a, b) {
@@ -253,9 +160,9 @@
 			}
 
 			_removeSpellCard(event) {
-				var index = this._selectedSpells.indexOf(event.detail.spell);
-				this._selectedSpells.splice(index, 1);
-				this._selectedSpells = JSON.parse(JSON.stringify(this._selectedSpells));
+				var index = this.selectedSpells.indexOf(event.detail.spell.name);
+				this.selectedSpells.splice(index, 1);
+				this.selectedSpells = JSON.parse(JSON.stringify(this.selectedSpells));
 			}
 
 			_getArrayOfLength(count) {
