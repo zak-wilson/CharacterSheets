@@ -64,7 +64,8 @@
 
 		<iron-ajax id="getCharacters" auto url="http://localhost:44443/" on-response="_characterResponse"></iron-ajax>
 		<iron-ajax id="getCharacter" auto url="http://localhost:44443/[[_encodeName(_selectedCharacter)]]" on-response="_characterResponse"></iron-ajax>
-		<iron-ajax id="saveCharacter" url="http://localhost:44443/" body="[[_stringify(_character)]]" content-type="application/json" method="POST"></iron-ajax>
+		<iron-ajax id="saveCharacter" url="http://localhost:44443/" body="[[_stringify(_character)]]" content-type="application/json"
+		 method="POST" on-response="_characterResponse"></iron-ajax>
 
 		<card-wrapper title="Basic Info" opened>
 			<div class="flexInline">
@@ -113,7 +114,7 @@
 			<stat-page strength="{{_stats.strength}}" dexterity="{{_stats.dexterity}}" constitution="{{_stats.constitution}}"
 			 intelligence="{{_stats.intelligence}}" wisdom="{{_stats.wisdom}}" charisma="{{_stats.charisma}}" selected-skills="{{_stats.skills}}"
 			 current-hit-points="{{_stats.currentHitPoints}}" max-hit-points="{{_stats.maxHitPoints}}" proficiency-bonus="{{_stats.proficiencyBonus}}"
-			 armour-class="{{_stats.armourClass}}" initiative="{{_stats.initiative}}" speed="{{_stats.speed}}" saving-throws="[[_stats.savingThrows]]"
+			 armour-class="{{_stats.armourClass}}" initiative="{{_stats.initiative}}" speed="{{_stats.speed}}" saving-throws="[[_savingThrows]]"
 			 modifiers="{{_statModifiers}}" loading-file="[[_loadingFile]]"></stat-page>
 		</card-wrapper>
 		<card-wrapper title="Proficiencies">
@@ -249,6 +250,10 @@
 							speed: 0
 						}
 					},
+					_savingThrows: {
+						type: Array,
+						value: []
+					},
 					_proficiencies: {
 						type: Object,
 						value: {}
@@ -357,6 +362,7 @@
 				this._updateStats(newBackground, oldBackground);
 			}
 			_updateStats(newValue, oldValue) {
+				this._savingThrows = this._switchArrayValues(this._savingThrows || [], newValue && newValue.savingThrows || [], oldValue && oldValue.savingThrows || []);
 				this._traitsSelected = this._switchArrayValues(this._traitsSelected || [], newValue && newValue.traits || [], oldValue && oldValue.traits || []);
 			}
 
@@ -415,10 +421,6 @@
 				this.$.saveCharacter.generateRequest();
 			}
 
-			_load() {
-				this.$.characterUploader.click();
-			}
-
 			_encodeName(name) {
 				return encodeURI(name);
 			}
@@ -432,6 +434,9 @@
 						break;
 					case 'getCharacter':
 						this._character = e.target.lastResponse;
+						break;
+					case 'saveCharacter':
+						this.$.getCharacters.generateRequest();
 						break;
 				}
 			}
