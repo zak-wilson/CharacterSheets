@@ -386,9 +386,9 @@
 				let pieces = stringVal.split(' + ');
 				let ret = pieces.map(piece => {
 					if (Number(piece)) return Number(piece);
-					if (piece === 'proficiencyBonus') return proficiencyBonus;
+					if (piece === 'proficiencyBonus') return Number(proficiencyBonus);
 					if (piece === 'level') return Number(level);
-					if (statModifiers[piece]) return statModifiers[piece];
+					if (statModifiers[piece]) return Number(statModifiers[piece]);
 					return 0;
 				}).reduce(this._sum, 0);
 
